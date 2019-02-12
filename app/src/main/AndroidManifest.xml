@@ -1,0 +1,33 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.jtech.cloudtorrentmaster">
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <application
+        android:name=".JApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:theme="@style/AppTheme"
+        tools:ignore="AllowBackup,GoogleAppIndexingWarning">
+        <!--起始页-->
+        <activity
+            android:name=".view.activity.SplashActivity"
+            android:label="@string/splash_activity_title">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <!--主页-->
+        <activity
+            android:name=".view.activity.MainActivity"
+            android:label="@string/app_name" />
+        <!--服务器选择-->
+        <activity
+            android:name=".view.activity.ServerSelectActivity"
+            android:label="@string/server_select_activity_title" />
+    </application>
+</manifest>
