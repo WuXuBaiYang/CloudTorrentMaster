@@ -3,7 +3,6 @@ package com.jtech.cloudtorrentmaster.mvp.presenter;
 import android.content.Context;
 import android.os.Bundle;
 
-import com.jtech.cloudtorrentmaster.R;
 import com.jtech.cloudtorrentmaster.model.ServerInfoModel;
 import com.jtech.cloudtorrentmaster.mvp.contract.MainContract;
 import com.jtech.cloudtorrentmaster.net.API;
@@ -25,8 +24,6 @@ public class MainPresenter implements MainContract.Presenter {
             this.model = (ServerInfoModel) bundle.getSerializable(MainActivity.KEY_SERVER_INFO);
         }
         //初始化离线服务器接口
-        API.get().initCloudTorrentApi(
-                String.format(context.getString(R.string.base_url_format),
-                        model.getIpAddress(), model.getPort()));
+        API.get().initCloudTorrentApi("http://" + model.getIpAddress() + ":" + model.getPort());
     }
 }

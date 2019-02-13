@@ -16,7 +16,7 @@ public class ServerDownloadsModel extends BaseModel {
     @SerializedName("Modified")
     private String modified = "";
     @SerializedName("Children")
-    private List<ChildrenModel> childes = new ArrayList<>();
+    private List<ChildModel> childes = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -45,11 +45,11 @@ public class ServerDownloadsModel extends BaseModel {
         return this;
     }
 
-    public List<ChildrenModel> getChildes() {
+    public List<ChildModel> getChildes() {
         return childes;
     }
 
-    public ServerDownloadsModel setChildes(List<ChildrenModel> childes) {
+    public ServerDownloadsModel setChildes(List<ChildModel> childes) {
         this.childes = childes;
         return this;
     }
@@ -57,7 +57,7 @@ public class ServerDownloadsModel extends BaseModel {
     /**
      * 下载内容的子集
      */
-    public static class ChildrenModel extends BaseModel {
+    public static class ChildModel extends BaseModel {
         @SerializedName("Name")
         private String name = "";
         @SerializedName("Size")
@@ -65,13 +65,13 @@ public class ServerDownloadsModel extends BaseModel {
         @SerializedName("Modified")
         private String modified = "";
         @SerializedName("Children")
-        private List<ChildrenModel> childes = new ArrayList<>();
+        private List<ChildModel> childes = new ArrayList<>();
 
         public String getName() {
             return name;
         }
 
-        public ChildrenModel setName(String name) {
+        public ChildModel setName(String name) {
             this.name = name;
             return this;
         }
@@ -80,7 +80,7 @@ public class ServerDownloadsModel extends BaseModel {
             return size;
         }
 
-        public ChildrenModel setSize(int size) {
+        public ChildModel setSize(int size) {
             this.size = size;
             return this;
         }
@@ -89,16 +89,16 @@ public class ServerDownloadsModel extends BaseModel {
             return modified;
         }
 
-        public ChildrenModel setModified(String modified) {
+        public ChildModel setModified(String modified) {
             this.modified = modified;
             return this;
         }
 
-        public List<ChildrenModel> getChildes() {
+        public List<ChildModel> getChildes() {
             return childes;
         }
 
-        public ChildrenModel setChildes(List<ChildrenModel> childes) {
+        public ChildModel setChildes(List<ChildModel> childes) {
             this.childes = childes;
             return this;
         }

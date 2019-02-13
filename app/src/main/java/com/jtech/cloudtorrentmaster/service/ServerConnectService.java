@@ -1,10 +1,15 @@
 package com.jtech.cloudtorrentmaster.service;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.IBinder;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jtech.cloudtorrentmaster.model.ServerConfigModel;
@@ -16,31 +21,35 @@ import com.jtech.cloudtorrentmaster.model.ServerUserModel;
 import com.jtech.cloudtorrentmaster.model.event.BaseEvent;
 import com.jtech.cloudtorrentmaster.model.event.ConnectServerEvent;
 import com.jtech.cloudtorrentmaster.model.event.ServerConfigEvent;
+import com.jtech.cloudtorrentmaster.model.event.ServerConnectEvent;
 import com.jtech.cloudtorrentmaster.model.event.ServerDownloadsEvent;
 import com.jtech.cloudtorrentmaster.model.event.ServerSearchEvent;
 import com.jtech.cloudtorrentmaster.model.event.ServerStatsEvent;
 import com.jtech.cloudtorrentmaster.model.event.ServerTorrentsEvent;
 import com.jtech.cloudtorrentmaster.model.event.ServerUsersEvent;
+import com.jtech.cloudtorrentmaster.net.sse.EventSource;
 import com.jtechlib2.util.Bus;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import io.vertx.core.Vertx;
+import io.vertx.core.VertxOptions;
+import io.vertx.core.file.FileSystemOptions;
+import io.vertx.core.http.HttpClientOptions;
 
 /**
  * 长连接服务
  */
-public class KeepAliveService extends Service {
+public class ServerConnectService extends Service {
     private String originalJson = "";
+    private EventSource eventSource;
 
     @Override
     public void onCreate() {
@@ -67,12 +76,53 @@ public class KeepAliveService extends Service {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConnectEvent(ConnectServerEvent event) {
-        // TODO: 2019/2/13
-        if (event.isConnected()) {
-
-        } else {
-
+        if (event.isConnected()) {//发起连接
+            startConnect(event.getIpAddress(), event.getPort());
+        } else {//关闭连接
+            stopConnect();
         }
+    }
+
+    /**
+     * 发起连接
+     *
+     * @param host
+     * @param port
+     */
+    private void startConnect(@NonNull String host, int port) {
+        //停止现有链接
+        stopConnect();
+        //初始化配置参数
+        HttpClientOptions httpClientOptions = new HttpClientOptions();
+        httpClientOptions.setDefaultHost(host);
+        httpClientOptions.setDefaultPort(port);
+        VertxOptions vertxOptions = new VertxOptions();
+        FileSystemOptions fileSystemOptions = new FileSystemOptions();
+        vertxOptions.setFileSystemOptions(fileSystemOptions.setClassPathResolvingEnabled(false));
+        this.eventSource = EventSource.create(Vertx.vertx(vertxOptions), httpClientOptions);
+        new ServerConnectTask().execute(eventSource);
+    }
+
+    /**
+     * 停止连接
+     */
+    private void stopConnect() {
+        if (null != eventSource) {
+            eventSource.close();
+            eventSource = null;
+        }
+    }
+
+    /**
+     * 初始化原始消息
+     *
+     * @param originalJson
+     */
+    private void initOriginalJson(@NonNull String originalJson) {
+        this.originalJson = originalJson;
+        //分发初始数据的所有模块
+        distributeEvent(originalJson,
+                "Config", "SearchProviders", "Downloads", "Torrents", "Users", "Stats");
     }
 
     /**
@@ -81,15 +131,14 @@ public class KeepAliveService extends Service {
      * @param originalJson 原始json数据
      * @param updateJson   json更新字段
      */
-    private void updateOriginalJson(@NonNull String originalJson, @NonNull JSONObject updateJson) throws JSONException {
-        if (!updateJson.getBoolean("delta")) return;
+    private void updateOriginalJson(@NonNull String originalJson, @NonNull JsonObject updateJson) {
+        if (!updateJson.get("delta").getAsBoolean()) return;
         DocumentContext document = JsonPath.parse(originalJson);
         String targetModelName = "";
-        JSONArray options = updateJson.getJSONArray("body");
-        for (int i = 0; i < options.length(); i++) {
-            JSONObject option = options.getJSONObject(i);
-            String op = option.getString("op");
-            String[] paths = option.getString("path").split("/");
+        for (JsonElement element : updateJson.getAsJsonArray("body")) {
+            JsonObject option = element.getAsJsonObject();
+            String op = option.get("op").getAsString();
+            String[] paths = option.get("path").getAsString().split("/");
             String targetKey = paths[paths.length - 1];
             targetModelName = paths[1];
             String jsonPath = parsePaths(paths);
@@ -131,12 +180,12 @@ public class KeepAliveService extends Service {
      *
      * @param originalJson 原始json数据
      * @param modelsName   需要分发的模块名称(需要与真实key对应)
-     * @throws JSONException
      */
-    private void distributeEvent(@NonNull String originalJson, String... modelsName) throws JSONException {
-        JSONObject jsonBody = new JSONObject(originalJson).getJSONObject("body");
+    private void distributeEvent(@NonNull String originalJson, String... modelsName) {
+        JsonObject jsonBody = new JsonParser().parse(originalJson)
+                .getAsJsonObject().getAsJsonObject("body");
         for (String modelName : modelsName) {
-            String modelJson = jsonBody.getString(modelName);
+            JsonElement modelJson = jsonBody.get(modelName);
             BaseEvent event = null;
             if ("Config".equals(modelName)) {//服务器配置信息
                 event = new ServerConfigEvent(new Gson()
@@ -163,18 +212,13 @@ public class KeepAliveService extends Service {
      *
      * @param modelJson
      * @return
-     * @throws JSONException
      */
-    private List<ServerSearchModel> handleSearchProvidersModel(@NonNull String modelJson) throws JSONException {
+    private List<ServerSearchModel> handleSearchProvidersModel(@NonNull JsonElement modelJson) {
         List<ServerSearchModel> models = new ArrayList<>();
-        JSONObject jsonObject = new JSONObject(modelJson);
-        Iterator<String> iterable = jsonObject.keys();
-        while (iterable.hasNext()) {
-            String key = iterable.next();
-            JSONObject value = jsonObject.getJSONObject(key);
+        for (Map.Entry<String, JsonElement> entry : modelJson.getAsJsonObject().entrySet()) {
             models.add(new ServerSearchModel()
-                    .setName(value.optString("name", "unknown"))
-                    .setKeyword(key));
+                    .setName(entry.getValue().getAsJsonObject().get("name").getAsString())
+                    .setKeyword(entry.getKey()));
         }
         return models;
     }
@@ -184,16 +228,12 @@ public class KeepAliveService extends Service {
      *
      * @param modelJson
      * @return
-     * @throws JSONException
      */
-    private List<ServerTorrentModel> handleTorrentsModel(@NonNull String modelJson) throws JSONException {
+    private List<ServerTorrentModel> handleTorrentsModel(@NonNull JsonElement modelJson) {
         List<ServerTorrentModel> models = new ArrayList<>();
-        JSONObject jsonObject = new JSONObject(modelJson);
-        Iterator<String> iterable = jsonObject.keys();
-        while (iterable.hasNext()) {
-            String objectJson = jsonObject.getString(iterable.next());
+        for (Map.Entry<String, JsonElement> entry : modelJson.getAsJsonObject().entrySet()) {
             models.add(new Gson()
-                    .fromJson(objectJson, ServerTorrentModel.class));
+                    .fromJson(entry.getValue(), ServerTorrentModel.class));
         }
         return models;
     }
@@ -201,22 +241,50 @@ public class KeepAliveService extends Service {
     /**
      * 处理用户对象
      *
-     * @param modelName
+     * @param modelJson
      * @return
-     * @throws JSONException
      */
-    private List<ServerUserModel> handleUsersModel(@NonNull String modelName) throws JSONException {
+    private List<ServerUserModel> handleUsersModel(@NonNull JsonElement modelJson) {
         List<ServerUserModel> models = new ArrayList<>();
-        JSONObject jsonObject = new JSONObject(modelName);
-        Iterator<String> iterable = jsonObject.keys();
-        while (iterable.hasNext()) {
-            String key = iterable.next();
-            String value = jsonObject.getString(key);
+        for (Map.Entry<String, JsonElement> entry : modelJson.getAsJsonObject().entrySet()) {
             models.add(new ServerUserModel()
-                    .setId(key)
-                    .setIpAddress(value));
+                    .setId(entry.getKey())
+                    .setIpAddress(entry.getValue().getAsString()));
         }
         return models;
+    }
+
+    /**
+     * 服务器链接任务
+     */
+    @SuppressLint("StaticFieldLeak")
+    private class ServerConnectTask extends AsyncTask<EventSource, String, Boolean> {
+        @Override
+        protected Boolean doInBackground(EventSource... eventSources) {
+            EventSource eventSource = eventSources[0];
+            //发起连接
+            eventSource.connect("/sync", null, event ->
+                    onProgressUpdate("{\"connected\":" + event.succeeded() + "}"));
+            //回调消息
+            eventSource.onMessage(this::onProgressUpdate);
+            //服务器关闭监听
+            eventSource.onClose(event ->
+                    onProgressUpdate("{\"connected\":false}"));
+            return false;
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            JsonObject jsonObject = new JsonParser().parse(values[0]).getAsJsonObject();
+            if (jsonObject.has("id")) {//原始数据消息
+                initOriginalJson(values[0]);
+            } else if (jsonObject.has("delta")) {//更新数据消息
+                updateOriginalJson(originalJson, jsonObject);
+            } else if (jsonObject.has("connected")) {//链接状态消息
+                Bus.get().post(new ServerConnectEvent(
+                        jsonObject.get("connected").getAsBoolean()));
+            }
+        }
     }
 
     @Override
