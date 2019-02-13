@@ -19,7 +19,8 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.1.0-alpha02'
     implementation 'com.jtechlib2:basic-library:2.2.4'
+    implementation 'com.jayway.jsonpath:json-path:2.4.0'
 }

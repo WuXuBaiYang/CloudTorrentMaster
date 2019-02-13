@@ -1,11 +1,11 @@
-package com.jtech.cloudtorrentmaster.model.request;
+package com.jtech.cloudtorrentmaster.model;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * 服务器配置参数请求
+ * 服务器配置信息
  */
-public class ServerConfigureRequest {
+public class ServerConfigModel extends BaseModel {
     @SerializedName("AutoStart")
     private boolean autoStart = false;
     @SerializedName("DisableEncryption")
@@ -23,7 +23,7 @@ public class ServerConfigureRequest {
         return autoStart;
     }
 
-    public ServerConfigureRequest setAutoStart(boolean autoStart) {
+    public ServerConfigModel setAutoStart(boolean autoStart) {
         this.autoStart = autoStart;
         return this;
     }
@@ -32,7 +32,7 @@ public class ServerConfigureRequest {
         return disableEncryption;
     }
 
-    public ServerConfigureRequest setDisableEncryption(boolean disableEncryption) {
+    public ServerConfigModel setDisableEncryption(boolean disableEncryption) {
         this.disableEncryption = disableEncryption;
         return this;
     }
@@ -41,7 +41,7 @@ public class ServerConfigureRequest {
         return downloadDirectory;
     }
 
-    public ServerConfigureRequest setDownloadDirectory(String downloadDirectory) {
+    public ServerConfigModel setDownloadDirectory(String downloadDirectory) {
         this.downloadDirectory = downloadDirectory;
         return this;
     }
@@ -50,7 +50,7 @@ public class ServerConfigureRequest {
         return enableUpload;
     }
 
-    public ServerConfigureRequest setEnableUpload(boolean enableUpload) {
+    public ServerConfigModel setEnableUpload(boolean enableUpload) {
         this.enableUpload = enableUpload;
         return this;
     }
@@ -59,7 +59,7 @@ public class ServerConfigureRequest {
         return enableSeeding;
     }
 
-    public ServerConfigureRequest setEnableSeeding(boolean enableSeeding) {
+    public ServerConfigModel setEnableSeeding(boolean enableSeeding) {
         this.enableSeeding = enableSeeding;
         return this;
     }
@@ -68,7 +68,7 @@ public class ServerConfigureRequest {
         return incomingPort;
     }
 
-    public ServerConfigureRequest setIncomingPort(int incomingPort) {
+    public ServerConfigModel setIncomingPort(int incomingPort) {
         this.incomingPort = incomingPort;
         return this;
     }

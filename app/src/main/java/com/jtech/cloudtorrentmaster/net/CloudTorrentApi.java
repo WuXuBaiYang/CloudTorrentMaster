@@ -1,7 +1,7 @@
 package com.jtech.cloudtorrentmaster.net;
 
 import com.jtech.cloudtorrentmaster.model.MagnetModel;
-import com.jtech.cloudtorrentmaster.model.request.ServerConfigureRequest;
+import com.jtech.cloudtorrentmaster.model.request.ServerConfigRequest;
 
 import java.util.List;
 
@@ -40,7 +40,7 @@ public interface CloudTorrentApi {
      * @param item 二级页面地址
      * @return
      */
-    @GET("search/{site}")
+    @GET("search/{site}/item")
     Observable<List<MagnetModel>> searchItem(
             @Path("site") String site,
             @Query("item") String item
@@ -87,7 +87,7 @@ public interface CloudTorrentApi {
      */
     @POST("api/configure")
     Observable<String> modifyServerConfigure(
-            @Body ServerConfigureRequest request
+            @Body ServerConfigRequest request
     );
 
     /**
