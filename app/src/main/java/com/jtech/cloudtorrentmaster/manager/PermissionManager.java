@@ -11,7 +11,7 @@ import com.jtechlib2.manager.BasePermissionManager;
  */
 public class PermissionManager extends BasePermissionManager {
     //必备权限
-    private final static String[] mustPermisstion = {
+    private final static String[] mustPermission = {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
@@ -22,6 +22,6 @@ public class PermissionManager extends BasePermissionManager {
      * @param listener
      */
     public static void checkMust(Activity activity, PermissionListener listener) {
-        checkMultiple(activity, mustPermisstion, listener);
+        checkMultiple(activity, mustPermission, listener);
     }
 }
