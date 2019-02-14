@@ -10,7 +10,6 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -34,8 +33,5 @@ dependencies {
     implementation 'com.jtechlib2:basic-library:2.2.4'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.0.0'
     implementation 'com.jayway.jsonpath:json-path:2.4.0'
-    implementation 'io.vertx:vertx-core:3.6.2'
-    implementation 'io.vertx:vertx-codegen:3.6.2'
-    implementation 'io.vertx:vertx-web:3.6.2'
-    implementation 'com.android.support:multidex:1.0.3'
+    implementation "org.java-websocket:Java-WebSocket:1.3.9"
 }

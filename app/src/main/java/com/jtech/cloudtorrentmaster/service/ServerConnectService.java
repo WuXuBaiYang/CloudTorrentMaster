@@ -2,16 +2,22 @@ package com.jtech.cloudtorrentmaster.service;
 
 import android.annotation.SuppressLint;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
+import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import com.jtech.cloudtorrentmaster.R;
 import com.jtech.cloudtorrentmaster.model.ServerConfigModel;
 import com.jtech.cloudtorrentmaster.model.ServerDownloadsModel;
 import com.jtech.cloudtorrentmaster.model.ServerSearchModel;
@@ -27,29 +33,34 @@ import com.jtech.cloudtorrentmaster.model.event.ServerSearchEvent;
 import com.jtech.cloudtorrentmaster.model.event.ServerStatsEvent;
 import com.jtech.cloudtorrentmaster.model.event.ServerTorrentsEvent;
 import com.jtech.cloudtorrentmaster.model.event.ServerUsersEvent;
-import com.jtech.cloudtorrentmaster.net.sse.EventSource;
 import com.jtechlib2.util.Bus;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import io.vertx.core.Vertx;
-import io.vertx.core.VertxOptions;
-import io.vertx.core.file.FileSystemOptions;
-import io.vertx.core.http.HttpClientOptions;
 
 /**
  * 长连接服务
  */
 public class ServerConnectService extends Service {
-    private String originalJson = "";
-    private EventSource eventSource;
+    private ServerConnectSocketTask socketTask;
+    private JsonObject originalJson;
+
+    @Override
+    public ComponentName startForegroundService(Intent service) {
+        return super.startForegroundService(service);
+    }
 
     @Override
     public void onCreate() {
@@ -92,24 +103,20 @@ public class ServerConnectService extends Service {
     private void startConnect(@NonNull String host, int port) {
         //停止现有链接
         stopConnect();
-        //初始化配置参数
-        HttpClientOptions httpClientOptions = new HttpClientOptions();
-        httpClientOptions.setDefaultHost(host);
-        httpClientOptions.setDefaultPort(port);
-        VertxOptions vertxOptions = new VertxOptions();
-        FileSystemOptions fileSystemOptions = new FileSystemOptions();
-        vertxOptions.setFileSystemOptions(fileSystemOptions.setClassPathResolvingEnabled(false));
-        this.eventSource = EventSource.create(Vertx.vertx(vertxOptions), httpClientOptions);
-        new ServerConnectTask().execute(eventSource);
+        //实例化socket任务
+        this.socketTask = new ServerConnectSocketTask();
+        this.socketTask.execute(String.format(
+                getString(R.string.server_connect_sync), host, port));
+        this.socketTask.setAutoReconnect(true);
     }
 
     /**
      * 停止连接
      */
     private void stopConnect() {
-        if (null != eventSource) {
-            eventSource.close();
-            eventSource = null;
+        if (null != socketTask) {
+            this.socketTask.closeConnect();
+            this.socketTask = null;
         }
     }
 
@@ -118,7 +125,7 @@ public class ServerConnectService extends Service {
      *
      * @param originalJson
      */
-    private void initOriginalJson(@NonNull String originalJson) {
+    private void initOriginalJson(@NonNull JsonObject originalJson) {
         this.originalJson = originalJson;
         //分发初始数据的所有模块
         distributeEvent(originalJson,
@@ -131,9 +138,9 @@ public class ServerConnectService extends Service {
      * @param originalJson 原始json数据
      * @param updateJson   json更新字段
      */
-    private void updateOriginalJson(@NonNull String originalJson, @NonNull JsonObject updateJson) {
+    private void updateOriginalJson(@NonNull JsonObject originalJson, @NonNull JsonObject updateJson) {
         if (!updateJson.get("delta").getAsBoolean()) return;
-        DocumentContext document = JsonPath.parse(originalJson);
+        DocumentContext document = JsonPath.parse(originalJson.toString());
         String targetModelName = "";
         for (JsonElement element : updateJson.getAsJsonArray("body")) {
             JsonObject option = element.getAsJsonObject();
@@ -149,7 +156,9 @@ public class ServerConnectService extends Service {
             }
         }
         //将修改过的json替换至原始json中
-        this.originalJson = document.jsonString();
+        this.originalJson = new Gson()
+                .toJsonTree(document.read("$"), new TypeToken<LinkedHashMap>() {
+                }.getType()).getAsJsonObject();
         //分发消息
         distributeEvent(this.originalJson, targetModelName);
     }
@@ -181,9 +190,8 @@ public class ServerConnectService extends Service {
      * @param originalJson 原始json数据
      * @param modelsName   需要分发的模块名称(需要与真实key对应)
      */
-    private void distributeEvent(@NonNull String originalJson, String... modelsName) {
-        JsonObject jsonBody = new JsonParser().parse(originalJson)
-                .getAsJsonObject().getAsJsonObject("body");
+    private void distributeEvent(@NonNull JsonObject originalJson, String... modelsName) {
+        JsonObject jsonBody = originalJson.getAsJsonObject("body");
         for (String modelName : modelsName) {
             JsonElement modelJson = jsonBody.get(modelName);
             BaseEvent event = null;
@@ -255,34 +263,106 @@ public class ServerConnectService extends Service {
     }
 
     /**
-     * 服务器链接任务
+     * 服务器长连接
      */
     @SuppressLint("StaticFieldLeak")
-    private class ServerConnectTask extends AsyncTask<EventSource, String, Boolean> {
+    private class ServerConnectSocketTask extends AsyncTask<String, String, Boolean> {
+        //心跳包检测频率，默认15秒
+        private long heartBeatDelay = 15 * 1000;
+        private WebSocketClient webSocketClient;
+        private boolean autoReconnect = false;
+
+        @SuppressLint("HandlerLeak")
+        private Handler heartBeatHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                //如果对象不为空并且正在连接，则继续发送心跳包
+                if (null != webSocketClient) {
+                    webSocketClient.send("");
+                    sendHeartBeat();
+                }
+            }
+        };
+
+        /**
+         * 发送心跳包
+         */
+        private void sendHeartBeat() {
+            heartBeatHandler.sendEmptyMessageDelayed(0, heartBeatDelay);
+        }
+
+        /**
+         * 设置是否自动重连
+         *
+         * @param autoReconnect
+         * @return
+         */
+        ServerConnectSocketTask setAutoReconnect(boolean autoReconnect) {
+            this.autoReconnect = autoReconnect;
+            return this;
+        }
+
+        /**
+         * 关闭链接
+         */
+        void closeConnect() {
+            if (null != webSocketClient) {
+                this.webSocketClient.close();
+                this.webSocketClient = null;
+            }
+        }
+
         @Override
-        protected Boolean doInBackground(EventSource... eventSources) {
-            EventSource eventSource = eventSources[0];
-            //发起连接
-            eventSource.connect("/sync", null, event ->
-                    onProgressUpdate("{\"connected\":" + event.succeeded() + "}"));
-            //回调消息
-            eventSource.onMessage(this::onProgressUpdate);
-            //服务器关闭监听
-            eventSource.onClose(event ->
-                    onProgressUpdate("{\"connected\":false}"));
+        protected Boolean doInBackground(String... strings) {
+            String requestUrl = strings[0];
+            if (TextUtils.isEmpty(requestUrl)) return false;
+            try {
+                //初始化webSocket
+                this.webSocketClient = new WebSocketClient(new URI(requestUrl)) {
+                    @Override
+                    public void onOpen(ServerHandshake serverHandshake) {
+                        onProgressUpdate("{\"connected\":true}");
+                    }
+
+                    @Override
+                    public void onMessage(String message) {
+                        onProgressUpdate(message);
+                    }
+
+                    @Override
+                    public void onClose(int code, String reason, boolean remote) {
+                        onProgressUpdate("{\"connected\":false}");
+                        //自动重连
+                        if (autoReconnect && null != webSocketClient) {
+                            webSocketClient.reconnect();
+                        }
+                    }
+
+                    @Override
+                    public void onError(Exception ex) {
+                    }
+                };
+                //开始连接
+                this.webSocketClient.connect();
+                //发送心跳包
+                sendHeartBeat();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
             return false;
         }
 
         @Override
         protected void onProgressUpdate(String... values) {
-            JsonObject jsonObject = new JsonParser().parse(values[0]).getAsJsonObject();
-            if (jsonObject.has("id")) {//原始数据消息
-                initOriginalJson(values[0]);
-            } else if (jsonObject.has("delta")) {//更新数据消息
-                updateOriginalJson(originalJson, jsonObject);
-            } else if (jsonObject.has("connected")) {//链接状态消息
+            JsonObject messageJson = new JsonParser()
+                    .parse(values[0]).getAsJsonObject();
+            if (messageJson.has("id")) {//原始数据消息
+                initOriginalJson(messageJson);
+            } else if (messageJson.has("delta")) {//更新数据消息
+                updateOriginalJson(originalJson, messageJson);
+            } else if (messageJson.has("connected")) {//链接状态
                 Bus.get().post(new ServerConnectEvent(
-                        jsonObject.get("connected").getAsBoolean()));
+                        messageJson.get("connected").getAsBoolean()));
             }
         }
     }

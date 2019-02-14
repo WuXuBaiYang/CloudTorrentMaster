@@ -7,7 +7,6 @@ import com.jtech.cloudtorrentmaster.manager.ActivityGoManager;
 import com.jtech.cloudtorrentmaster.manager.PermissionManager;
 import com.jtech.cloudtorrentmaster.mvp.contract.SplashContract;
 import com.jtech.cloudtorrentmaster.mvp.presenter.SplashPresenter;
-import com.jtechlib2.listener.PermissionListener;
 import com.jtechlib2.view.activity.BaseActivity;
 
 /**
@@ -29,12 +28,9 @@ public class SplashActivity extends BaseActivity implements SplashContract.View 
 
     @Override
     protected void loadData() {
-        PermissionManager.checkMust(getActivity(), new PermissionListener() {
-            @Override
-            public void result(boolean allGranted) {
-                ActivityGoManager.goServerSelectPage(getActivity());
-                onBackPressed();
-            }
+        PermissionManager.checkMust(getActivity(), allGranted -> {
+            ActivityGoManager.goServerSelectPage(getActivity());
+            onBackPressed();
         });
     }
 }
