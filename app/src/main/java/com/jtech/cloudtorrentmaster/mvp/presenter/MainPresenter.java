@@ -26,6 +26,6 @@ public class MainPresenter implements MainContract.Presenter {
         }
         //初始化离线服务器接口
         API.get().initCloudTorrentApi(
-                String.format(context.getString(R.string.server_base_url), model.getIpAddress(), model.getPort()));
+                String.format(context.getString(R.string.server_base_url), model.getIp(), model.getPort()));
     }
 }

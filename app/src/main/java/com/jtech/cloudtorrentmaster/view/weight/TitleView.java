@@ -1,6 +1,5 @@
 package com.jtech.cloudtorrentmaster.view.weight;
 
-import android.app.Activity;
 import android.view.View;
 
 import com.google.android.material.appbar.AppBarLayout;
@@ -24,7 +23,7 @@ public class TitleView {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    private Activity activity;
+    private AppCompatActivity activity;
 
     /**
      * 兼容appcompat的主构造
@@ -32,28 +31,9 @@ public class TitleView {
      * @param activity
      */
     public TitleView(@NonNull AppCompatActivity activity) {
-        this(activity.getParent());
-        activity.setSupportActionBar(toolbar);
-    }
-
-    /**
-     * 主构造
-     *
-     * @param activity
-     */
-    public TitleView(@NonNull Activity activity) {
         this.activity = activity;
         ButterKnife.bind(this, activity);
-    }
-
-    /**
-     * 构造对象
-     *
-     * @param activity
-     * @return
-     */
-    public static TitleView build(Activity activity) {
-        return new TitleView(activity);
+        activity.setSupportActionBar(toolbar);
     }
 
     /**
@@ -85,6 +65,7 @@ public class TitleView {
     public TitleView setTitle(@NonNull CharSequence title) {
         if (null != toolbar) {
             toolbar.setTitle(title);
+            activity.setSupportActionBar(toolbar);
         }
         return this;
     }

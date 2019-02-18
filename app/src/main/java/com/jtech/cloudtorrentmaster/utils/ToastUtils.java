@@ -16,10 +16,9 @@ public class ToastUtils {
      *
      * @param view
      * @param resId
-     * @param duration
      */
-    public static void showShort(@NonNull View view, @StringRes int resId, int duration) {
-        show(view, view.getResources().getString(resId), Snackbar.LENGTH_SHORT);
+    public static Snackbar showShort(@NonNull View view, @StringRes int resId) {
+        return showShort(view, view.getResources().getString(resId));
     }
 
     /**
@@ -27,10 +26,9 @@ public class ToastUtils {
      *
      * @param view
      * @param text
-     * @param duration
      */
-    public static void showShort(@NonNull View view, @NonNull CharSequence text, int duration) {
-        show(view, text, Snackbar.LENGTH_SHORT);
+    public static Snackbar showShort(@NonNull View view, @NonNull CharSequence text) {
+        return show(view, text, Snackbar.LENGTH_SHORT);
     }
 
     /**
@@ -39,8 +37,8 @@ public class ToastUtils {
      * @param view
      * @param resId
      */
-    public static void showLong(@NonNull View view, @StringRes int resId) {
-        show(view, view.getResources().getString(resId), Snackbar.LENGTH_LONG);
+    public static Snackbar showLong(@NonNull View view, @StringRes int resId) {
+        return showLong(view, view.getResources().getString(resId));
     }
 
     /**
@@ -49,8 +47,8 @@ public class ToastUtils {
      * @param view
      * @param text
      */
-    public static void showLong(@NonNull View view, @NonNull CharSequence text) {
-        show(view, text, Snackbar.LENGTH_LONG);
+    public static Snackbar showLong(@NonNull View view, @NonNull CharSequence text) {
+        return show(view, text, Snackbar.LENGTH_LONG);
     }
 
     /**
@@ -60,7 +58,8 @@ public class ToastUtils {
      * @param text
      * @param duration
      */
-    public static void show(@NonNull View view, @NonNull CharSequence text, int duration) {
-        Snackbar.make(view, text, duration);
+    public static Snackbar show(@NonNull View view, @NonNull CharSequence text, int duration) {
+        return Snackbar.make(view, text, duration);
     }
+
 }

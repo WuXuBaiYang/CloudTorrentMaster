@@ -1,13 +1,25 @@
 package com.jtech.cloudtorrentmaster.model;
 
+import android.annotation.SuppressLint;
+
 /**
  * 服务器信息
  */
 public class ServerInfoModel extends BaseModel {
     private String label;
-    private String ipAddress;
+    private String ip;
     private int port;
     private String iconUri;
+
+    /**
+     * 获取完整的ip地址+端口
+     *
+     * @return
+     */
+    @SuppressLint("DefaultLocale")
+    public String getIpAddress() {
+        return String.format("%s:%d", ip, port);
+    }
 
     public String getLabel() {
         return label;
@@ -18,12 +30,12 @@ public class ServerInfoModel extends BaseModel {
         return this;
     }
 
-    public String getIpAddress() {
-        return ipAddress;
+    public String getIp() {
+        return ip;
     }
 
-    public ServerInfoModel setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
+    public ServerInfoModel setIp(String ip) {
+        this.ip = ip;
         return this;
     }
 
