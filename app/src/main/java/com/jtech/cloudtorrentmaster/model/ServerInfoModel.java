@@ -7,8 +7,7 @@ public class ServerInfoModel extends BaseModel {
     private String label;
     private String ipAddress;
     private int port;
-    private String iconPath;
-    private int iconResId;
+    private String iconUri;
 
     public String getLabel() {
         return label;
@@ -37,21 +36,12 @@ public class ServerInfoModel extends BaseModel {
         return this;
     }
 
-    public String getIconPath() {
-        return iconPath;
+    public String getIconUri() {
+        return iconUri;
     }
 
-    public ServerInfoModel setIconPath(String iconPath) {
-        this.iconPath = iconPath;
-        return this;
-    }
-
-    public int getIconResId() {
-        return iconResId;
-    }
-
-    public ServerInfoModel setIconResId(int iconResId) {
-        this.iconResId = iconResId;
+    public ServerInfoModel setIconUri(String iconUri) {
+        this.iconUri = iconUri;
         return this;
     }
 }
