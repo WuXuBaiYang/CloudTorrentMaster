@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -10,4 +11,43 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="?actionBarSize" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_server_select"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_fab_add"
+        app:fabSize="normal"
+        app:layout_anchor="@+id/linearlayout_server_info_create_sheet"
+        app:layout_anchorGravity="top|end"
+        app:useCompatPadding="true" />
+
+    <LinearLayout
+        android:id="@+id/linearlayout_server_info_create_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/horizontal_margin"
+        android:paddingTop="@dimen/vertical_margin"
+        android:paddingRight="@dimen/horizontal_margin"
+        android:paddingBottom="@dimen/vertical_margin"
+        app:layout_behavior="@string/bottom_sheet_behavior">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

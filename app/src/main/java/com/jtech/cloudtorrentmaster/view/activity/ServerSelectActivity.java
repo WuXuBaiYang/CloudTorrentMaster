@@ -2,7 +2,10 @@ package com.jtech.cloudtorrentmaster.view.activity;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.LinearLayout;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.jtech.cloudtorrentmaster.R;
@@ -22,6 +25,7 @@ import com.jtechlib2.view.recycler.RecyclerHolder;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
+import butterknife.OnClick;
 
 /**
  * 服务器选择页面
@@ -32,7 +36,12 @@ public class ServerSelectActivity extends BaseActivity implements ServerSelectCo
 
     @BindView(R.id.jrecyclerview_server_select)
     JRecyclerView jRecyclerView;
+    @BindView(R.id.fab_server_select)
+    FloatingActionButton fabAdd;
+    @BindView(R.id.linearlayout_server_info_create_sheet)
+    LinearLayout linearLayoutSheet;
 
+    private BottomSheetBehavior bottomSheetBehavior;
     private ServerInfoAdapter serverInfoAdapter;
 
     @Override
@@ -48,6 +57,11 @@ public class ServerSelectActivity extends BaseActivity implements ServerSelectCo
         TitleView.build(getActivity())
                 .setTitle(R.string.server_select_title)
                 .setLeftButton(R.drawable.ic_title_close, this);
+        //初始化底部的创建视图
+        bottomSheetBehavior = BottomSheetBehavior.from(linearLayoutSheet);
+        bottomSheetBehavior.setHideable(true);
+        //隐藏底部sheet栏
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         //设置适配器
         jRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         serverInfoAdapter = new ServerInfoAdapter(getActivity());
@@ -76,10 +90,21 @@ public class ServerSelectActivity extends BaseActivity implements ServerSelectCo
         jRecyclerView.startDrag(holder);
     }
 
+    @OnClick({R.id.fab_server_select})
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            default://默认为关闭按钮        }
+            case R.id.fab_server_select://添加/完成按钮点击事件
+                if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    fabAdd.setImageResource(R.drawable.ic_fab_done);
+                } else {
+                    // TODO: 2019/2/18 保存输入的内容
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                    fabAdd.setImageResource(R.drawable.ic_fab_add);
+                }
+                break;
+            default://默认为关闭按钮
                 onBackPressed();
                 break;
         }
