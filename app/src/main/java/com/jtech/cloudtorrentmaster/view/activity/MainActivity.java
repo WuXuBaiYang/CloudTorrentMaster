@@ -59,13 +59,13 @@ public class MainActivity extends BaseActivity implements MainContract.View,
                 .setSubTitle(null != model ? model.getIpAddress() : "")
                 .setLeftButton(R.drawable.ic_title_menu, this)
                 .setMenuClickListener(this);
-        //设置服务器信息
-        setupServerInfo(model);
         //设置侧滑菜单的点击事件
         navigationView.setNavigationItemSelectedListener(this);
         //实例化viewholder
         this.viewHolder = new NavigationHeaderViewHolder(
                 navigationView.getHeaderView(0));
+        //设置服务器信息
+        setupServerInfo(model);
     }
 
     @Override
