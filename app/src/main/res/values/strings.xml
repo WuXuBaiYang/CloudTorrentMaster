@@ -16,5 +16,5 @@
     <string name="input_error_empty">不能为空</string>
     <string name="input_error_label_over_limit">超出字数限制</string>
     <string name="input_error_ip_format_error">格式有误</string>
-    <string name="input_error_port_over_limit">端口号超出范围(65535)</string>
+    <string name="input_error_port_over_limit">端口号范围错误(0~65535)</string>
 </resources>

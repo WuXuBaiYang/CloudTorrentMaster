@@ -126,6 +126,7 @@ public class ServerSelectActivity extends BaseActivity implements ServerSelectCo
         //如果存在服务器信息，则默认隐藏创建sheet
         if (serverInfoAdapter.getItemCount() > 0) {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            fabAdd.setImageResource(R.drawable.ic_fab_add);
         }
         //设置服务器logo集合
         serverLogoAdapter.setDatas(presenter.loadServerLogoList());
@@ -169,7 +170,7 @@ public class ServerSelectActivity extends BaseActivity implements ServerSelectCo
         }
         int port = Integer.parseInt(Objects.requireNonNull(
                 textInputLayoutPort.getEditText()).getText().toString());
-        if (port > 65535) {
+        if (port > 65535 || port <= 0) {
             textInputLayoutPort.setError(getString(R.string.input_error_port_over_limit));
             return false;
         }
