@@ -10,4 +10,7 @@
     <dimen name="default_card_corner">3dp</dimen>
     <dimen name="server_info_country_logo">30dp</dimen>
     <dimen name="default_drawable_padding">6dp</dimen>
+    <dimen name="server_info_fab_elevation">10dp</dimen>
+    <dimen name="server_info_create_card_elevation">8dp</dimen>
+    <dimen name="server_select_create_logo_size">28dp</dimen>
 </resources>

@@ -1,13 +1,16 @@
 package com.jtech.cloudtorrentmaster.mvp.presenter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 
+import com.jtech.cloudtorrentmaster.manager.IconsManager;
 import com.jtech.cloudtorrentmaster.manager.ParamsCacheManager;
 import com.jtech.cloudtorrentmaster.model.ServerInfoModel;
 import com.jtech.cloudtorrentmaster.mvp.contract.ServerSelectContract;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 服务器选择页面
@@ -30,5 +33,10 @@ public class ServerSelectPresenter implements ServerSelectContract.Presenter {
     public void setupSerInfoList(List<ServerInfoModel> models) {
         ParamsCacheManager.get(context)
                 .setServerInfoList(models);
+    }
+
+    @Override
+    public List<Map.Entry<String, Uri>> loadServerLogoList() {
+        return IconsManager.get(context).getCountryIcons();
     }
 }
