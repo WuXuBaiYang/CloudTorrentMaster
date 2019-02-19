@@ -10,6 +10,8 @@ import com.jtechlib2.cache.BaseCacheManager;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+
 /**
  * 常用参数缓存管理
  */
@@ -56,9 +58,16 @@ public class ParamsCacheManager extends BaseCacheManager {
      *
      * @param model
      */
-    public void addServerInfo(ServerInfoModel model) {
+    public void addOrUpdateServerInfo(@NonNull ServerInfoModel model, int index) {
         List<ServerInfoModel> list = getServerInfoList();
-        list.add(model);
+        for (int i = 0; i < list.size(); i++) {
+            if (model.getId().equals(list.get(i).getId())) {
+                list.set(i, model);
+                setServerInfoList(list);
+                return;
+            }
+        }
+        list.add(index, model);
         setServerInfoList(list);
     }
 

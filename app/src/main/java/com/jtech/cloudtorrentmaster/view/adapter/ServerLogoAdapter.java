@@ -69,6 +69,15 @@ public class ServerLogoAdapter extends RecyclerAdapter<Map.Entry<String, Uri>> {
         return this;
     }
 
+    /**
+     * 获得选中的对象
+     *
+     * @return
+     */
+    public Map.Entry<String, Uri> getSelectItem() {
+        return getItem(selectedPosition);
+    }
+
     @Override
     protected View createView(LayoutInflater layoutInflater, ViewGroup viewGroup, int viewType) {
         return layoutInflater.inflate(R.layout.view_server_logo_item, viewGroup, false);

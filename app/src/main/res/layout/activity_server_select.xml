@@ -116,6 +116,7 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:digits="@string/ip_address_digits"
                         android:hint="@string/server_select_input_hint_ip"
                         android:imeOptions="actionNext"
                         android:inputType="number"

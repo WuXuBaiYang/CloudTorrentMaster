@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import java.util.regex.Pattern;
+
 import androidx.annotation.NonNull;
 
 /**
@@ -28,6 +30,18 @@ public class Utils {
                 name.replaceAll("\\s+", "+"), trackerInfo.toString());
     }
 
+    /**
+     * 判断是否为ip地址(0.0.0.0)
+     *
+     * @param ipAddress
+     * @return
+     */
+    public static boolean isIPAddress(String ipAddress) {
+        String regex = "[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}";
+        return Pattern.compile(regex)
+                .matcher(ipAddress)
+                .matches();
+    }
 
     /**
      * 显示软键盘

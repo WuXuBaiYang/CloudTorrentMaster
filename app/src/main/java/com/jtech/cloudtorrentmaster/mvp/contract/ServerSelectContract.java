@@ -17,6 +17,8 @@ public interface ServerSelectContract {
 
         void setupSerInfoList(List<ServerInfoModel> models);
 
+        void addOrUpdateServerInfo(ServerInfoModel model, int index);
+
         List<Map.Entry<String, Uri>> loadServerLogoList();
     }
 

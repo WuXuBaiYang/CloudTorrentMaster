@@ -24,15 +24,11 @@
         android:id="@+id/cardview_server_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
-        android:foreground="?selectableItemBackground"
         app:cardBackgroundColor="@android:color/white"
-        app:cardCornerRadius="0dp"
-        app:contentPaddingBottom="@dimen/vertical_margin"
-        app:contentPaddingLeft="@dimen/horizontal_margin"
-        app:contentPaddingRight="@dimen/horizontal_margin"
-        app:contentPaddingTop="@dimen/vertical_margin">
+        app:cardCornerRadius="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -45,15 +41,12 @@
                 android:id="@+id/imageview_server_info_country"
                 android:layout_width="@dimen/server_info_country_logo"
                 android:layout_height="@dimen/server_info_country_logo"
+                android:layout_margin="@dimen/default_margin"
                 tools:ignore="ContentDescription" />
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/horizontal_margin"
-                android:layout_marginLeft="@dimen/horizontal_margin"
-                android:layout_marginEnd="@dimen/horizontal_margin"
-                android:layout_marginRight="@dimen/horizontal_margin"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
@@ -62,7 +55,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
-                    android:text="中国服务器"
                     android:textColor="?android:textColorPrimary"
                     android:textSize="@dimen/text_size_large" />
 
@@ -71,10 +63,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
-                    android:text="192.168.1.1:1080"
                     android:textColor="?android:textColorHint"
                     android:textSize="@dimen/text_size_small" />
             </LinearLayout>
+
+            <ImageView
+                android:id="@+id/imageview_server_info_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="@dimen/default_margin"
+                android:src="@drawable/ic_server_info_edit"
+                tools:ignore="ContentDescription" />
 
             <ImageView
                 android:id="@+id/imageview_server_info_drag"
@@ -82,9 +84,9 @@
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:focusable="true"
-                android:foreground="?selectableItemBackgroundBorderless"
+                android:padding="@dimen/default_margin"
                 android:src="@drawable/ic_list_item_drag"
-                tools:ignore="ContentDescription,UnusedAttribute" />
+                tools:ignore="ContentDescription" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </FrameLayout>

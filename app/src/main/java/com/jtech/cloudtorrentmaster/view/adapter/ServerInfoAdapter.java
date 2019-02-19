@@ -14,6 +14,8 @@ import com.jtechlib2.util.ImageUtils;
 import com.jtechlib2.view.adapter.RecyclerSwipeAdapter;
 import com.jtechlib2.view.recycler.RecyclerHolder;
 
+import androidx.annotation.NonNull;
+
 /**
  * 服务器信息列表适配器
  */
@@ -36,6 +38,23 @@ public class ServerInfoAdapter extends RecyclerSwipeAdapter<ServerInfoModel> {
     public ServerInfoAdapter setListener(OnServerInfoListener listener) {
         this.listener = listener;
         return this;
+    }
+
+    /**
+     * 添加或更新服务器列表
+     *
+     * @param model
+     * @param index
+     */
+    public void addOrUpdateItem(@NonNull ServerInfoModel model, int index) {
+        for (int i = 0; i < getItemCount(); i++) {
+            if (model.getId().equals(getItem(i).getId())) {
+                updataItem(i, model);
+                return;
+            }
+        }
+        //如果未更新则添加数据对象
+        addData(index, model);
     }
 
     @Override
@@ -103,6 +122,15 @@ public class ServerInfoAdapter extends RecyclerSwipeAdapter<ServerInfoModel> {
                 listener.onItemClick(model);
             }
         });
+        //设置编辑按钮点击事件
+        holder.setClickListener(R.id.imageview_server_info_edit, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (null != listener) {
+                    listener.onItemEditClick(model);
+                }
+            }
+        });
     }
 
     /**
@@ -110,6 +138,8 @@ public class ServerInfoAdapter extends RecyclerSwipeAdapter<ServerInfoModel> {
      */
     public interface OnServerInfoListener {
         void onItemDragClick(RecyclerHolder holder);
+
+        void onItemEditClick(ServerInfoModel model);
 
         void onItemClick(ServerInfoModel model);
 

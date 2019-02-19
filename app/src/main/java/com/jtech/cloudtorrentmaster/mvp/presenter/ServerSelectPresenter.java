@@ -36,6 +36,11 @@ public class ServerSelectPresenter implements ServerSelectContract.Presenter {
     }
 
     @Override
+    public void addOrUpdateServerInfo(ServerInfoModel model, int index) {
+        ParamsCacheManager.get(context).addOrUpdateServerInfo(model, index);
+    }
+
+    @Override
     public List<Map.Entry<String, Uri>> loadServerLogoList() {
         return IconsManager.get(context).getCountryIcons();
     }

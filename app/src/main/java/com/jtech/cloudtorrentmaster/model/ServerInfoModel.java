@@ -6,9 +6,11 @@ import android.annotation.SuppressLint;
  * 服务器信息
  */
 public class ServerInfoModel extends BaseModel {
+    private String id;
     private String label;
     private String ip;
     private int port;
+    private String iconName;
     private String iconUri;
 
     /**
@@ -19,6 +21,15 @@ public class ServerInfoModel extends BaseModel {
     @SuppressLint("DefaultLocale")
     public String getIpAddress() {
         return String.format("%s:%d", ip, port);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public ServerInfoModel setId(String id) {
+        this.id = id;
+        return this;
     }
 
     public String getLabel() {
@@ -45,6 +56,15 @@ public class ServerInfoModel extends BaseModel {
 
     public ServerInfoModel setPort(int port) {
         this.port = port;
+        return this;
+    }
+
+    public String getIconName() {
+        return iconName;
+    }
+
+    public ServerInfoModel setIconName(String iconName) {
+        this.iconName = iconName;
         return this;
     }
 

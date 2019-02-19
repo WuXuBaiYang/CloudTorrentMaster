@@ -9,7 +9,12 @@
     <string name="server_select_delete_toast">已删除：%s</string>
     <string name="server_select_undo">撤销</string>
     <string name="server_select_input_hint_port">端口号</string>
-    <string name="server_select_input_hint_ip">IP地址</string>
+    <string name="server_select_input_hint_ip">IP地址(0.0.0.0)</string>
     <string name="server_select_input_hint_label">服务器标签</string>
     <string name="server_select_logo_text">选择一个logo</string>
+    <string name="ip_address_digits">0123456789.</string>
+    <string name="input_error_empty">不能为空</string>
+    <string name="input_error_label_over_limit">超出字数限制</string>
+    <string name="input_error_ip_format_error">格式有误</string>
+    <string name="input_error_port_over_limit">端口号超出范围(65535)</string>
 </resources>
