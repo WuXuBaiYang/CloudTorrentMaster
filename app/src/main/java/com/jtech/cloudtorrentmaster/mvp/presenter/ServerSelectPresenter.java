@@ -42,6 +42,6 @@ public class ServerSelectPresenter implements ServerSelectContract.Presenter {
 
     @Override
     public List<Map.Entry<String, Uri>> loadServerLogoList() {
-        return IconsManager.get(context).getCountryIcons();
+        return IconsManager.get(context).getLogoIcons();
     }
 }

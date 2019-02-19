@@ -18,7 +18,7 @@ import androidx.annotation.NonNull;
  */
 public class IconsManager {
     //声明国家图标资源表和文件类型资源表
-    private LinkedHashMap<String, Uri> iconsCountryMap, iconsFileTypeMap;
+    private LinkedHashMap<String, Uri> iconsLogoMap, iconsFileTypeMap;
     private static IconsManager manager;
 
     /**
@@ -28,12 +28,12 @@ public class IconsManager {
      */
     private IconsManager(@NonNull Context context) {
         this.iconsFileTypeMap = new LinkedHashMap<>();
-        this.iconsCountryMap = new LinkedHashMap<>();
+        this.iconsLogoMap = new LinkedHashMap<>();
         try {
             //读取asset中的资源
             AssetManager assetManager = context.getAssets();
             //加载国家国旗资源
-            loadAssetsFileList(assetManager, "icons/country", iconsCountryMap);
+            loadAssetsFileList(assetManager, "icons/logo", iconsLogoMap);
             //加载文件类型资源
             loadAssetsFileList(assetManager, "icons/file_type", iconsFileTypeMap);
         } catch (IOException e) {
@@ -76,8 +76,8 @@ public class IconsManager {
      *
      * @return
      */
-    public List<Map.Entry<String, Uri>> getCountryIcons() {
-        if (null == iconsCountryMap) return new ArrayList<>();
-        return new ArrayList<>(iconsCountryMap.entrySet());
+    public List<Map.Entry<String, Uri>> getLogoIcons() {
+        if (null == iconsLogoMap) return new ArrayList<>();
+        return new ArrayList<>(iconsLogoMap.entrySet());
     }
 }

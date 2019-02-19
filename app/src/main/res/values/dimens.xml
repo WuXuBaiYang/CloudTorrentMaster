@@ -8,7 +8,7 @@
     <dimen name="text_size_large">18sp</dimen>
     <dimen name="divider_size">1px</dimen>
     <dimen name="default_card_corner">3dp</dimen>
-    <dimen name="server_info_country_logo">30dp</dimen>
+    <dimen name="server_info_logo_size">30dp</dimen>
     <dimen name="default_drawable_padding">6dp</dimen>
     <dimen name="server_info_fab_elevation">10dp</dimen>
     <dimen name="server_info_create_card_elevation">8dp</dimen>

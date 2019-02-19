@@ -100,7 +100,7 @@ public class ServerInfoAdapter extends RecyclerSwipeAdapter<ServerInfoModel> {
     protected void convert(RecyclerHolder holder, ServerInfoModel model, int position) {
         //显示国家图标
         ImageUtils.showImage(getContext(), Uri.parse(model.getIconUri()),
-                holder.getImageView(R.id.imageview_server_info_country));
+                holder.getImageView(R.id.imageview_server_info_logo));
         //显示标签
         holder.setText(R.id.textview_server_info_label, model.getLabel());
         //显示ip地址
@@ -123,12 +123,9 @@ public class ServerInfoAdapter extends RecyclerSwipeAdapter<ServerInfoModel> {
             }
         });
         //设置编辑按钮点击事件
-        holder.setClickListener(R.id.imageview_server_info_edit, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null != listener) {
-                    listener.onItemEditClick(model);
-                }
+        holder.setClickListener(R.id.imageview_server_info_edit, v -> {
+            if (null != listener) {
+                listener.onItemEditClick(model);
             }
         });
     }
