@@ -83,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/vertical_margin"
                 app:counterEnabled="true"
-                app:counterMaxLength="12"
+                app:counterMaxLength="25"
                 app:errorEnabled="true"
                 app:hintEnabled="true">
 

@@ -28,4 +28,14 @@ public class MainPresenter implements MainContract.Presenter {
         API.get().initCloudTorrentApi(
                 String.format(context.getString(R.string.server_base_url), model.getIp(), model.getPort()));
     }
+
+    @Override
+    public String getServerName() {
+        return null != model ? model.getLabel() : context.getString(R.string.app_name);
+    }
+
+    @Override
+    public String getIPAddress() {
+        return null != model ? model.getIpAddress() : "0.0.0.0:0";
+    }
 }

@@ -7,6 +7,9 @@ import com.jtechlib2.contract.BaseContract;
  */
 public interface MainContract {
     interface Presenter extends BaseContract.Presenter {
+        String getServerName();
+
+        String getIPAddress();
     }
 
     interface View extends BaseContract.View {
