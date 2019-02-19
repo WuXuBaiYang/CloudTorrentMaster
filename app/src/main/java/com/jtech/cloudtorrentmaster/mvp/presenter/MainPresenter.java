@@ -30,12 +30,7 @@ public class MainPresenter implements MainContract.Presenter {
     }
 
     @Override
-    public String getServerName() {
-        return null != model ? model.getLabel() : context.getString(R.string.app_name);
-    }
-
-    @Override
-    public String getIPAddress() {
-        return null != model ? model.getIpAddress() : "0.0.0.0:0";
+    public ServerInfoModel getServerInfo() {
+        return model;
     }
 }

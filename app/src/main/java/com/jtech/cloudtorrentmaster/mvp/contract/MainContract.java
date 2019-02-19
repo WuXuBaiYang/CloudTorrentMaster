@@ -1,5 +1,6 @@
 package com.jtech.cloudtorrentmaster.mvp.contract;
 
+import com.jtech.cloudtorrentmaster.model.ServerInfoModel;
 import com.jtechlib2.contract.BaseContract;
 
 /**
@@ -7,9 +8,7 @@ import com.jtechlib2.contract.BaseContract;
  */
 public interface MainContract {
     interface Presenter extends BaseContract.Presenter {
-        String getServerName();
-
-        String getIPAddress();
+        ServerInfoModel getServerInfo();
     }
 
     interface View extends BaseContract.View {

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/background_title_bar"
+    android:orientation="vertical"
+    android:padding="@dimen/default_margin">
+
+    <com.cy.translucentparent.StatusBarView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:id="@+id/imageview_main_navigation_header_logo"
+        android:layout_width="@dimen/main_navigation_header_logo_size"
+        android:layout_height="@dimen/main_navigation_header_logo_size"
+        android:layout_marginTop="@dimen/vertical_margin"
+        android:src="@mipmap/ic_launcher_round"
+        tools:ignore="ContentDescription" />
+
+    <LinearLayout
+        android:id="@+id/linearlayout_main_navigation_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/default_margin"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textview_main_navigation_header_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/text_size_large" />
+
+            <TextView
+                android:id="@+id/textview_main_navigation_header_ip_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:textColor="@android:color/secondary_text_dark_nodisable"
+                android:textSize="@dimen/text_size_small" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/imageview_main_navigation_header_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_more"
+            tools:ignore="ContentDescription" />
+    </LinearLayout>
+</LinearLayout>

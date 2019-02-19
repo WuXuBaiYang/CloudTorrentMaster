@@ -2,6 +2,7 @@ package com.jtech.cloudtorrentmaster.view.weight;
 
 import android.view.View;
 
+import com.cy.translucentparent.StatusNavUtils;
 import com.google.android.material.appbar.AppBarLayout;
 import com.jtech.cloudtorrentmaster.R;
 
@@ -34,6 +35,8 @@ public class TitleView {
         this.activity = activity;
         ButterKnife.bind(this, activity);
         activity.setSupportActionBar(toolbar);
+        //设置状态栏为全透明
+        StatusNavUtils.setStatusNavBarColor(activity, 0x00000000, 0x00000000);
     }
 
     /**

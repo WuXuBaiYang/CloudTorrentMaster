@@ -18,4 +18,6 @@
     <string name="input_error_ip_format_error">格式有误</string>
     <string name="input_error_port_over_limit">端口号范围错误(0~65535)</string>
     <string name="main_menu_download_title">下载到本地</string>
+    <string name="navigation_open">侧滑菜单打开</string>
+    <string name="navigation_close">侧滑菜单关闭</string>
 </resources>
