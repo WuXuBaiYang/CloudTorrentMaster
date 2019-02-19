@@ -226,6 +226,9 @@ public class ServerSelectActivity extends BaseActivity implements ServerSelectCo
     public void onItemClick(ServerInfoModel model) {
         //跳转到主页
         ActivityGoManager.goMainPage(getActivity(), model);
+        //关闭sheet并关闭当前页面
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        onBackPressed();
     }
 
     @Override
