@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageview_server_select_sheet_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="@dimen/default_margin"
+            android:src="@drawable/ic_sheet_close"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/imageview_server_select_sheet_forward"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="@dimen/default_margin"
+            android:src="@drawable/button_sheet_forward"
+            tools:ignore="ContentDescription" />
+    </LinearLayout>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardview_server_select_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardCornerRadius="0dp"
+        app:contentPaddingBottom="@dimen/vertical_margin"
+        app:contentPaddingLeft="@dimen/horizontal_margin"
+        app:contentPaddingRight="@dimen/horizontal_margin"
+        app:contentPaddingTop="@dimen/vertical_margin">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/server_select_logo_text"
+                android:textColor="?android:textColorSecondary"
+                android:textSize="@dimen/text_size_normal" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/vertical_margin"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imageview_server_select_sheet_logo"
+                    android:layout_width="@dimen/server_select_create_logo_size"
+                    android:layout_height="@dimen/server_select_create_logo_size"
+                    android:foreground="@drawable/button_server_select_create_logo"
+                    tools:ignore="ContentDescription,UnusedAttribute" />
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="18dp"
+                    android:layout_marginStart="@dimen/default_margin"
+                    android:layout_marginLeft="@dimen/default_margin"
+                    android:background="@color/divider_color"
+                    tools:ignore="RtlHardcoded" />
+
+                <com.jtechlib2.view.recycler.JRecyclerView
+                    android:id="@+id/jrecyclerview_server_select_sheet_logo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textinputlayout_server_select_sheet_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/vertical_margin"
+                app:counterEnabled="true"
+                app:counterMaxLength="25"
+                app:errorEnabled="true"
+                app:hintEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/textinputedittext_server_select_sheet_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/server_select_input_hint_label"
+                    android:imeOptions="actionNext"
+                    android:inputType="text"
+                    android:singleLine="true"
+                    android:textColor="?android:textColorSecondary"
+                    android:textSize="@dimen/text_size_normal" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/vertical_margin"
+                android:orientation="horizontal"
+                tools:ignore="DisableBaselineAlignment">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textinputlayout_server_select_sheet_ip"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    app:errorEnabled="true"
+                    app:hintEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/textinputedittext_server_select_sheet_ip"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:digits="@string/ip_address_digits"
+                        android:hint="@string/server_select_input_hint_ip"
+                        android:imeOptions="actionNext"
+                        android:inputType="number"
+                        android:singleLine="true"
+                        android:textColor="?android:textColorSecondary"
+                        android:textSize="@dimen/text_size_normal" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textinputlayout_server_select_sheet_port"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:errorEnabled="true"
+                    app:hintEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/textinputedittext_server_select_sheet_port"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/server_select_input_hint_port"
+                        android:imeOptions="actionDone"
+                        android:inputType="numberSigned"
+                        android:singleLine="true"
+                        android:textColor="?android:textColorSecondary"
+                        android:textSize="@dimen/text_size_normal" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</LinearLayout>

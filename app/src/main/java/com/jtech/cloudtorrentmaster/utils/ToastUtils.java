@@ -17,8 +17,8 @@ public class ToastUtils {
      * @param view
      * @param resId
      */
-    public static Snackbar showShort(@NonNull View view, @StringRes int resId) {
-        return showShort(view, view.getResources().getString(resId));
+    public static Snackbar makeShort(@NonNull View view, @StringRes int resId) {
+        return makeShort(view, view.getResources().getString(resId));
     }
 
     /**
@@ -27,8 +27,8 @@ public class ToastUtils {
      * @param view
      * @param text
      */
-    public static Snackbar showShort(@NonNull View view, @NonNull CharSequence text) {
-        return show(view, text, Snackbar.LENGTH_SHORT);
+    public static Snackbar makeShort(@NonNull View view, @NonNull CharSequence text) {
+        return make(view, text, Snackbar.LENGTH_SHORT);
     }
 
     /**
@@ -37,8 +37,8 @@ public class ToastUtils {
      * @param view
      * @param resId
      */
-    public static Snackbar showLong(@NonNull View view, @StringRes int resId) {
-        return showLong(view, view.getResources().getString(resId));
+    public static Snackbar makeLong(@NonNull View view, @StringRes int resId) {
+        return makeLong(view, view.getResources().getString(resId));
     }
 
     /**
@@ -47,8 +47,8 @@ public class ToastUtils {
      * @param view
      * @param text
      */
-    public static Snackbar showLong(@NonNull View view, @NonNull CharSequence text) {
-        return show(view, text, Snackbar.LENGTH_LONG);
+    public static Snackbar makeLong(@NonNull View view, @NonNull CharSequence text) {
+        return make(view, text, Snackbar.LENGTH_LONG);
     }
 
     /**
@@ -58,7 +58,7 @@ public class ToastUtils {
      * @param text
      * @param duration
      */
-    public static Snackbar show(@NonNull View view, @NonNull CharSequence text, int duration) {
+    public static Snackbar make(@NonNull View view, @NonNull CharSequence text, int duration) {
         return Snackbar.make(view, text, duration);
     }
 

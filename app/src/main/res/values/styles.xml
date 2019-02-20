@@ -6,6 +6,9 @@
         <item name="colorAccent">@color/color_accent</item>
         <item name="android:textColorPrimary">@color/text_color_primary</item>
         <item name="android:textColorSecondary">@color/text_color_secondary</item>
-        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <style name="BottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
 </resources>
