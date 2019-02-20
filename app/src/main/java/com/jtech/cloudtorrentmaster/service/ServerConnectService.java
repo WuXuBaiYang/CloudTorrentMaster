@@ -277,7 +277,7 @@ public class ServerConnectService extends Service {
             @Override
             public void handleMessage(Message msg) {
                 //如果对象不为空并且正在连接，则继续发送心跳包
-                if (null != webSocketClient) {
+                if (null != webSocketClient && webSocketClient.isConnecting()) {
                     webSocketClient.send("");
                     sendHeartBeat();
                 }

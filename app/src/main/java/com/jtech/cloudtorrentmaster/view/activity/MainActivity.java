@@ -23,6 +23,7 @@ import com.jtechlib2.util.ImageUtils;
 import com.jtechlib2.view.activity.BaseActivity;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import butterknife.BindView;
@@ -89,6 +90,25 @@ public class MainActivity extends BaseActivity implements MainContract.View,
     }
 
     /**
+     * 启动新的页面
+     *
+     * @param model
+     */
+    private void switchNewServer(ServerInfoModel model) {
+        String message = String.format(getString(R.string.server_switch_message),
+                model.getLabel(), model.getIpAddress());
+        new AlertDialog.Builder(getActivity())
+                .setMessage(message)
+                .setNegativeButton(getString(R.string.dialog_cancel), null)
+                .setPositiveButton(getString(R.string.dialog_server_switch), (dialog, which) -> {
+                    //重新启动本页
+                    ActivityGoManager.goMainPage(getActivity(), model);
+                    //关闭当前页面
+                    MainActivity.super.onBackPressed();
+                }).show();
+    }
+
+    /**
      * 关闭navigation
      *
      * @return
@@ -138,7 +158,7 @@ public class MainActivity extends BaseActivity implements MainContract.View,
     }
 
     /**
-     *
+     * 持有侧滑菜单的视图
      */
     class NavigationHeaderViewHolder {
         @BindView(R.id.imageview_main_navigation_header_logo)
@@ -170,9 +190,7 @@ public class MainActivity extends BaseActivity implements MainContract.View,
                         .setListener(new ServerSelectPopup.OnServerSelectPopupListener() {
                             @Override
                             public void onItemSelect(ServerInfoModel model) {
-                                //重新启动本页
-                                ActivityGoManager.goMainPage(getActivity(), model);
-                                finish();
+                                switchNewServer(model);
                             }
 
                             @Override

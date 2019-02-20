@@ -20,4 +20,7 @@
     <string name="main_menu_download_title">下载到本地</string>
     <string name="navigation_open">侧滑菜单打开</string>
     <string name="navigation_close">侧滑菜单关闭</string>
+    <string name="server_switch_message">切换至 %s(%s)，当前服务器将断开连接!</string>
+    <string name="dialog_cancel">取消</string>
+    <string name="dialog_server_switch">切换</string>
 </resources>
