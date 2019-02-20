@@ -199,7 +199,7 @@ public class ServerSelectActivity extends BaseActivity implements ServerSelectCo
         if (null != model) {
             //设置已有参数
             serverLogoAdapter.setSelected(model.getIconName());
-            ImageUtils.showImage(getActivity(), Uri.parse(model.getIconUri()), imageViewLogoSelected);
+            ImageUtils.showImage(getActivity(),model.getIconUri(), imageViewLogoSelected);
             Objects.requireNonNull(textInputLayoutLabel.getEditText()).setText(model.getLabel());
             Objects.requireNonNull(textInputLayoutIP.getEditText()).setText(model.getIp());
             Objects.requireNonNull(textInputLayoutPort.getEditText()).setText(String.valueOf(model.getPort()));

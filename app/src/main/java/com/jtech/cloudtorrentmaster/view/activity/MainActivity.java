@@ -6,14 +6,18 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
 import com.jtech.cloudtorrentmaster.R;
+import com.jtech.cloudtorrentmaster.manager.ActivityGoManager;
 import com.jtech.cloudtorrentmaster.model.ServerInfoModel;
 import com.jtech.cloudtorrentmaster.mvp.contract.MainContract;
 import com.jtech.cloudtorrentmaster.mvp.presenter.MainPresenter;
+import com.jtech.cloudtorrentmaster.view.weight.ServerSelectPopup;
 import com.jtech.cloudtorrentmaster.view.weight.TitleView;
 import com.jtechlib2.util.ImageUtils;
 import com.jtechlib2.view.activity.BaseActivity;
@@ -58,7 +62,7 @@ public class MainActivity extends BaseActivity implements MainContract.View,
                 .setMenuClickListener(this);
         //设置侧滑菜单的点击事件
         navigationView.setNavigationItemSelectedListener(this);
-        //实例化viewholder
+        //实例化viewHolder
         this.viewHolder = new NavigationHeaderViewHolder(
                 navigationView.getHeaderView(0));
         //设置服务器信息
@@ -84,6 +88,20 @@ public class MainActivity extends BaseActivity implements MainContract.View,
         viewHolder.textViewHeaderLabel.setText(model.getLabel());
     }
 
+    /**
+     * 关闭navigation
+     *
+     * @return
+     */
+    @SuppressLint("RtlHardcoded")
+    private boolean closeNavigation() {
+        if (null != drawerLayout && drawerLayout.isDrawerOpen(Gravity.LEFT)) {
+            drawerLayout.closeDrawer(Gravity.LEFT);
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         // TODO: 2019/2/19 实现侧滑菜单点击事件
@@ -92,7 +110,14 @@ public class MainActivity extends BaseActivity implements MainContract.View,
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        // TODO: 2019/2/19 实现右侧菜单的事件响应
+        switch (item.getItemId()) {
+            case R.id.main_menu_download://下载按钮
+                // TODO: 2019/2/20  
+                break;
+            case R.id.main_menu_search://搜索按钮
+                // TODO: 2019/2/20
+                break;
+        }
         return false;
     }
 
@@ -125,6 +150,8 @@ public class MainActivity extends BaseActivity implements MainContract.View,
         @BindView(R.id.imageview_main_navigation_header_arrow)
         ImageView imageViewHeaderArrow;
 
+        private ServerSelectPopup serverSelectPopup;
+
         NavigationHeaderViewHolder(View headerView) {
             ButterKnife.bind(this, headerView);
         }
@@ -133,8 +160,64 @@ public class MainActivity extends BaseActivity implements MainContract.View,
          * 服务器信息点击事件
          */
         @OnClick(R.id.linearlayout_main_navigation_header)
-        void onServerItemClick() {
-            // TODO: 2019/2/19 弹出服务器选择列表以及旋转arrow
+        void onServerItemClick(View v) {
+            imageViewHeaderArrow.setEnabled(
+                    !imageViewHeaderArrow.isEnabled());
+            rotationArrow(!imageViewHeaderArrow.isEnabled());
+            if (null == serverSelectPopup) {
+                serverSelectPopup = ServerSelectPopup.build(getActivity())
+                        .setDatas(presenter.loadServerInfoList(true))
+                        .setListener(new ServerSelectPopup.OnServerSelectPopupListener() {
+                            @Override
+                            public void onItemSelect(ServerInfoModel model) {
+                                //重新启动本页
+                                ActivityGoManager.goMainPage(getActivity(), model);
+                                finish();
+                            }
+
+                            @Override
+                            public void onDismiss() {
+                                rotationArrow(false);
+                                imageViewHeaderArrow.setEnabled(true);
+                            }
+                        });
+            }
+            if (!imageViewHeaderArrow.isEnabled()) {
+                serverSelectPopup.show(v);
+            } else {
+                serverSelectPopup.dismiss();
+            }
         }
+
+        /**
+         * 旋转箭头
+         *
+         * @param isUp
+         */
+        private void rotationArrow(boolean isUp) {
+            Animation animation = AnimationUtils.loadAnimation(getActivity(),
+                    isUp ? R.anim.arrow_rotation_up : R.anim.arrow_rotation_down);
+            imageViewHeaderArrow.startAnimation(animation);
+        }
+
+        /**
+         * 取消popup
+         *
+         * @return
+         */
+        boolean dismissPopup() {
+            if (null != serverSelectPopup && serverSelectPopup.isShowing()) {
+                serverSelectPopup.dismiss();
+                return true;
+            }
+            return false;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (viewHolder.dismissPopup()) return;
+        if (closeNavigation()) return;
+        super.onBackPressed();
     }
 }

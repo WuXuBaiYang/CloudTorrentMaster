@@ -38,16 +38,14 @@ public class API extends BaseApi {
      */
     public void initCloudTorrentApi(String baseUrl) {
         this.baseUrl = baseUrl;
-        if (null == cloudTorrentApi) {
-            //实例化gson
-            Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(Date.class, new DateTypeAdapter())
-                    .create();
-            OkHttpClient.Builder builder = new OkHttpClient()
-                    .newBuilder();
-            cloudTorrentApi = create(builder.build(),
-                    JGsonConverterFactory.create(gson), RxJava2CallAdapterFactory.create(), baseUrl, CloudTorrentApi.class);
-        }
+        //实例化gson
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Date.class, new DateTypeAdapter())
+                .create();
+        OkHttpClient.Builder builder = new OkHttpClient()
+                .newBuilder();
+        cloudTorrentApi = create(builder.build(),
+                JGsonConverterFactory.create(gson), RxJava2CallAdapterFactory.create(), baseUrl, CloudTorrentApi.class);
     }
 
     /**

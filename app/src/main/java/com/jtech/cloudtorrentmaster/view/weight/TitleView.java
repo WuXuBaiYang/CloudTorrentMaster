@@ -34,8 +34,8 @@ public class TitleView {
     public TitleView(@NonNull AppCompatActivity activity) {
         this.activity = activity;
         ButterKnife.bind(this, activity);
-        StatusNavUtils.setStatusNavBarColor(activity, 0x00000000, 0x00000000);
         activity.setSupportActionBar(toolbar);
+        StatusNavUtils.setStatusBarColor(activity, 0x00000000);
     }
 
     /**

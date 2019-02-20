@@ -99,7 +99,7 @@ public class ServerInfoAdapter extends RecyclerSwipeAdapter<ServerInfoModel> {
     @SuppressLint("ClickableViewAccessibility")
     protected void convert(RecyclerHolder holder, ServerInfoModel model, int position) {
         //显示国家图标
-        ImageUtils.showImage(getContext(), Uri.parse(model.getIconUri()),
+        ImageUtils.showImage(getContext(), model.getIconUri(),
                 holder.getImageView(R.id.imageview_server_info_logo));
         //显示标签
         holder.setText(R.id.textview_server_info_label, model.getLabel());
