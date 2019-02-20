@@ -34,9 +34,8 @@ public class TitleView {
     public TitleView(@NonNull AppCompatActivity activity) {
         this.activity = activity;
         ButterKnife.bind(this, activity);
-        activity.setSupportActionBar(toolbar);
-        //设置状态栏为全透明
         StatusNavUtils.setStatusNavBarColor(activity, 0x00000000, 0x00000000);
+        activity.setSupportActionBar(toolbar);
     }
 
     /**
@@ -68,7 +67,6 @@ public class TitleView {
     public TitleView setTitle(@NonNull CharSequence title) {
         if (null != toolbar) {
             toolbar.setTitle(title);
-            activity.setSupportActionBar(toolbar);
         }
         return this;
     }

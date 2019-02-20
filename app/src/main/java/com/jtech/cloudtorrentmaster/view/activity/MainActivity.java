@@ -53,10 +53,7 @@ public class MainActivity extends BaseActivity implements MainContract.View,
     protected void initViews(Bundle savedInstanceState) {
         setContentView(R.layout.activity_main);
         //初始化标题栏
-        ServerInfoModel model = presenter.getServerInfo();
         this.titleView = TitleView.build(getActivity())
-                .setTitle(null != model ? model.getLabel() : "")
-                .setSubTitle(null != model ? model.getIpAddress() : "")
                 .setLeftButton(R.drawable.ic_title_menu, this)
                 .setMenuClickListener(this);
         //设置侧滑菜单的点击事件
@@ -65,7 +62,7 @@ public class MainActivity extends BaseActivity implements MainContract.View,
         this.viewHolder = new NavigationHeaderViewHolder(
                 navigationView.getHeaderView(0));
         //设置服务器信息
-        setupServerInfo(model);
+        setupServerInfo(presenter.getServerInfo());
     }
 
     @Override
@@ -79,6 +76,8 @@ public class MainActivity extends BaseActivity implements MainContract.View,
      */
     private void setupServerInfo(ServerInfoModel model) {
         if (null == model) return;
+        titleView.setTitle(model.getLabel())
+                .setSubTitle(model.getIpAddress());
         //设置侧滑菜单
         ImageUtils.showImage(getActivity(), model.getIconUri(), viewHolder.imageViewHeaderLogo);
         viewHolder.textViewHeaderIPAddress.setText(model.getIpAddress());

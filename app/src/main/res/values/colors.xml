@@ -8,4 +8,5 @@
     <color name="text_color_secondary">#999999</color>
     <color name="divider_color">#d9d9d9</color>
     <color name="content_background">#ffffff</color>
+    <color name="main_navigation_header_ip_address">#e7f4e7</color>
 </resources>
