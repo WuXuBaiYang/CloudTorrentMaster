@@ -330,8 +330,10 @@ public class ServerConnectService extends Service {
                     }
 
                     @Override
+                    @SuppressLint("DefaultLocale")
                     public void onClose(int code, String reason, boolean remote) {
-                        onProgressUpdate("{\"connected\":false}");
+                        onProgressUpdate(String.format(
+                                "{\"connected\":false,\"code\":%d, \"message\":%s}", code, reason));
                         //自动重连
                         if (autoReconnect && null != webSocketClient) {
                             webSocketClient.reconnect();
@@ -362,7 +364,9 @@ public class ServerConnectService extends Service {
                 updateOriginalJson(originalJson, messageJson);
             } else if (messageJson.has("connected")) {//链接状态
                 Bus.get().post(new ServerConnectEvent(
-                        messageJson.get("connected").getAsBoolean()));
+                        messageJson.get("connected").getAsBoolean())
+                        .setCode(messageJson.get("code").getAsInt())
+                        .setReason(messageJson.get("message").getAsString()));
             }
         }
     }
