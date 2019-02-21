@@ -30,4 +30,8 @@
     <string name="add_task_tracker">Tracker</string>
     <string name="add_task_hash">Hash</string>
     <string name="add_task_name">Name</string>
+    <string name="add_task_sheet_not_found_torrent">文件不存在</string>
+    <string name="add_task_sheet_torrent_unexists">获取不到文件目录</string>
+    <string name="add_task_sheet_system_error">系统错误，请重试</string>
+    <string name="add_task_sheet_replace_torrent">更换种子</string>
 </resources>

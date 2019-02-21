@@ -1,6 +1,7 @@
 package com.jtech.cloudtorrentmaster.view.activity;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Menu;
@@ -32,8 +33,10 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -337,5 +340,13 @@ public class MainActivity extends BaseActivity implements MainContract.View,
             return;
         }
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //处理种子文件选择返回值
+        getAddTaskSheet().handlePickTorrentResult(requestCode,
+                resultCode, Objects.requireNonNull(data));
     }
 }

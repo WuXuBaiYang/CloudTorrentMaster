@@ -1,8 +1,10 @@
 package com.jtech.cloudtorrentmaster.view.weight;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -15,6 +17,7 @@ import android.widget.TextView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.textfield.TextInputLayout;
 import com.jtech.cloudtorrentmaster.R;
+import com.jtech.cloudtorrentmaster.utils.ToastUtils;
 import com.jtech.cloudtorrentmaster.utils.Utils;
 
 import java.io.File;
@@ -27,11 +30,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static android.app.Activity.RESULT_OK;
+
 /**
  * 添加下载任务的sheet
  */
 public class AddTaskSheet extends BottomSheetDialog implements DialogInterface.OnDismissListener,
         View.OnClickListener {
+    private final static int REQUEST_CODE_PICK_TORRENT = 0x001;
 
     @BindView(R.id.textinputlayout_add_task_name)
     TextInputLayout textInputLayoutName;
@@ -43,12 +49,20 @@ public class AddTaskSheet extends BottomSheetDialog implements DialogInterface.O
     LinearLayout linearLayoutTrackers;
     @BindView(R.id.textview_add_task_add_torrent)
     TextView textViewAddTorrent;
+    @BindView(R.id.linearlayout_add_task_magnet_info)
+    LinearLayout linearLayoutMagnetInfo;
+    @BindView(R.id.linearlayout_add_task_torrent_info)
+    LinearLayout linearLayoutTorrentInfo;
+    @BindView(R.id.textview_add_task_torrent_name)
+    TextView textViewTorrentName;
 
     private OnAddTaskListener listener;
-    private File fileTorrent;
+    private Activity activity;
+    private File torrentFile;
 
-    public AddTaskSheet(@NonNull Context context, int theme) {
+    private AddTaskSheet(@NonNull Activity context, int theme) {
         super(context, theme);
+        this.activity = context;
         //设置dismiss监听
         setOnDismissListener(this);
         //设置主视图
@@ -67,7 +81,7 @@ public class AddTaskSheet extends BottomSheetDialog implements DialogInterface.O
      * @param context
      * @return
      */
-    public static AddTaskSheet build(Context context) {
+    public static AddTaskSheet build(@NonNull Activity context) {
         return new AddTaskSheet(context, R.style.BottomSheetDialog);
     }
 
@@ -80,6 +94,69 @@ public class AddTaskSheet extends BottomSheetDialog implements DialogInterface.O
     public AddTaskSheet setListener(OnAddTaskListener listener) {
         this.listener = listener;
         return this;
+    }
+
+    /**
+     * 选择种子文件
+     *
+     * @return
+     */
+    private void pickTorrent() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("application/x-bittorrent");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        activity.startActivityForResult(intent, REQUEST_CODE_PICK_TORRENT);
+    }
+
+    /**
+     * 处理种子文件选择返回值
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     * @return
+     */
+    public boolean handlePickTorrentResult(int requestCode, int resultCode, @NonNull Intent data) {
+        if (requestCode == REQUEST_CODE_PICK_TORRENT && resultCode == RESULT_OK) {
+            Uri uri = data.getData();
+            if (null != uri) {
+                String filePath = Utils.getPath(getContext(), uri);
+                if (!TextUtils.isEmpty(filePath)) {
+                    File file = new File(filePath);
+                    if (file.exists()) {
+                        setTorrentFileInfo(file);
+                    } else {
+                        ToastUtils.makeShort(linearLayoutTrackers,
+                                R.string.add_task_sheet_not_found_torrent).show();
+                    }
+                } else {
+                    ToastUtils.makeShort(linearLayoutTrackers,
+                            R.string.add_task_sheet_torrent_unexists).show();
+                }
+            } else {
+                ToastUtils.makeShort(linearLayoutTrackers,
+                        R.string.add_task_sheet_system_error).show();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 设置种子文件信息
+     *
+     * @param file
+     */
+    private void setTorrentFileInfo(@NonNull File file) {
+        this.torrentFile = file;
+        textViewAddTorrent.setText(R.string.add_task_sheet_replace_torrent);
+        //显示种子信息隐藏磁力链信息
+        linearLayoutTorrentInfo.setVisibility(View.VISIBLE);
+        linearLayoutMagnetInfo.setVisibility(View.GONE);
+        //设置种子名称
+        textViewTorrentName.setText(file.getName());
+        //设置删除种子操作
+        // TODO: 2019/2/21
     }
 
     /**
@@ -99,9 +176,9 @@ public class AddTaskSheet extends BottomSheetDialog implements DialogInterface.O
         //清空trackers的子视图
         linearLayoutTrackers.removeAllViews();
         //隐藏种子信息
-        textViewAddTorrent.setText(getContext()
-                .getString(R.string.add_task_sheet_add_torrent));
-        // TODO: 2019/2/21
+        textViewAddTorrent.setText(R.string.add_task_sheet_add_torrent);
+        linearLayoutMagnetInfo.setVisibility(View.VISIBLE);
+        linearLayoutTorrentInfo.setVisibility(View.GONE);
     }
 
     /**
@@ -110,8 +187,8 @@ public class AddTaskSheet extends BottomSheetDialog implements DialogInterface.O
     private boolean commitTask() {
         if (null == listener) return false;
         //种子文件不为空则提交种子
-        if (null != fileTorrent) {
-            listener.addTorrentFileTask(fileTorrent);
+        if (null != torrentFile) {
+            listener.addTorrentFileTask(torrentFile);
             return true;
         }
         //判断hash值是否填写
@@ -185,7 +262,7 @@ public class AddTaskSheet extends BottomSheetDialog implements DialogInterface.O
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.textview_add_task_add_torrent://种子添加
-                // TODO: 2019/2/21 种子选取并添加
+                pickTorrent();
                 break;
             case R.id.textview_add_task_add_tracker://添加tracker服务器
                 addTrackerItem();
