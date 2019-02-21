@@ -196,10 +196,12 @@ public class ServerConnectService extends Service {
             JsonElement modelJson = jsonBody.get(modelName);
             BaseEvent event = null;
             if ("Config".equals(modelName)) {//服务器配置信息
-                event = new ServerConfigEvent(new Gson()
-                        .fromJson(modelJson, ServerConfigModel.class));
+                Bus.get().postSticky(new ServerConfigEvent(
+                        new Gson().fromJson(modelJson, ServerConfigModel.class)));
             } else if ("SearchProviders".equals(modelName)) {//搜索站点
-                event = new ServerSearchEvent(handleSearchProvidersModel(modelJson));
+                Bus.get().postSticky(
+                        new ServerSearchEvent(handleSearchProvidersModel(modelJson)));
+                return;
             } else if ("Downloads".equals(modelName)) {//下载信息
                 event = new ServerDownloadsEvent(new Gson()
                         .fromJson(modelJson, ServerDownloadsModel.class));

@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <group android:checkableBehavior="none">
+        <item
+            android:id="@+id/main_menu_navigation_setting"
+            android:icon="@drawable/ic_menu_setting"
+            android:title="@string/main_menu_navigation_setting"
+            tools:ignore="HardcodedText" />
+    </group>
 </menu>

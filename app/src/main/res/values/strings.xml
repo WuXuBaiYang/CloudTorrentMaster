@@ -23,4 +23,5 @@
     <string name="server_switch_message">切换至 %s(%s)，当前服务器将断开连接!</string>
     <string name="dialog_cancel">取消</string>
     <string name="dialog_server_switch">切换</string>
+    <string name="main_menu_navigation_setting">服务器/应用设置</string>
 </resources>

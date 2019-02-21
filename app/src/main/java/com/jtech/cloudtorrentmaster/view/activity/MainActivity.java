@@ -15,11 +15,8 @@ import com.google.android.material.navigation.NavigationView;
 import com.jtech.cloudtorrentmaster.R;
 import com.jtech.cloudtorrentmaster.manager.ActivityGoManager;
 import com.jtech.cloudtorrentmaster.model.ServerInfoModel;
-import com.jtech.cloudtorrentmaster.model.ServerSearchModel;
-import com.jtech.cloudtorrentmaster.model.event.ServerConfigEvent;
 import com.jtech.cloudtorrentmaster.model.event.ServerConnectEvent;
 import com.jtech.cloudtorrentmaster.model.event.ServerDownloadsEvent;
-import com.jtech.cloudtorrentmaster.model.event.ServerSearchEvent;
 import com.jtech.cloudtorrentmaster.model.event.ServerStatsEvent;
 import com.jtech.cloudtorrentmaster.model.event.ServerTorrentsEvent;
 import com.jtech.cloudtorrentmaster.model.event.ServerUsersEvent;
@@ -32,8 +29,6 @@ import com.jtechlib2.view.activity.BaseActivity;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -58,7 +53,6 @@ public class MainActivity extends BaseActivity implements MainContract.View,
     @BindView(R.id.navigationview_main)
     NavigationView navigationView;
 
-    private List<ServerSearchModel> serverSearchModels;
     private NavigationHeaderViewHolder viewHolder;
     private TitleView titleView;
 
@@ -99,12 +93,22 @@ public class MainActivity extends BaseActivity implements MainContract.View,
     }
 
     /**
-     * 服务器配置变化
+     * 服务器用户状态
      *
      * @param event
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onServerConfigEvent(ServerConfigEvent event) {
+    public void onServerUsersEvent(ServerUsersEvent event) {
+        // TODO: 2019/2/20
+    }
+
+    /**
+     * 服务器链接状态
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onServerConnect(ServerConnectEvent event) {
         // TODO: 2019/2/20
     }
 
@@ -125,37 +129,6 @@ public class MainActivity extends BaseActivity implements MainContract.View,
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onServerTorrentsEvent(ServerTorrentsEvent event) {
-        // TODO: 2019/2/20
-    }
-
-    /**
-     * 服务器用户状态
-     *
-     * @param event
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onServerUsersEvent(ServerUsersEvent event) {
-        // TODO: 2019/2/20
-    }
-
-    /**
-     * 服务器搜索站点信息
-     *
-     * @param event
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onServerSearchSiteEvent(ServerSearchEvent event) {
-        //缓存资源服务器可用站点记录
-        this.serverSearchModels = event.getModels();
-    }
-
-    /**
-     * 服务器链接状态
-     *
-     * @param event
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onServerConnect(ServerConnectEvent event) {
         // TODO: 2019/2/20
     }
 
@@ -209,7 +182,11 @@ public class MainActivity extends BaseActivity implements MainContract.View,
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        // TODO: 2019/2/19 实现侧滑菜单点击事件
+        switch (menuItem.getItemId()) {
+            case R.id.main_menu_navigation_setting://设置
+                // TODO: 2019/2/21 跳转到服务器设置页面
+                break;
+        }
         return false;
     }
 
