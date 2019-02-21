@@ -395,7 +395,7 @@ public class CreateServerInfoSheet extends BottomSheetDialog implements ServerLo
     private class OnTextWatcher implements TextWatcher {
         private TextInputLayout textInputLayout;
 
-        public OnTextWatcher(TextInputLayout textInputLayout) {
+        OnTextWatcher(TextInputLayout textInputLayout) {
             this.textInputLayout = textInputLayout;
         }
 

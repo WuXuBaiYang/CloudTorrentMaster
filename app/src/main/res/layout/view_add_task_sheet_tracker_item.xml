@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textinputlayout_add_task_sheet_tracker_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/add_task_sheet_tracker_item"
+                android:imeOptions="actionNext"
+                android:inputType="textWebEditText"
+                android:singleLine="true"
+                android:textColor="?android:textColorSecondary"
+                android:textSize="@dimen/text_size_normal" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageView
+            android:id="@+id/imageview_add_task_sheet_tracker_item_paste"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:background="?selectableItemBackgroundBorderless"
+            android:padding="@dimen/default_margin"
+            android:src="@drawable/ic_add_task_paste"
+            tools:ignore="ContentDescription" />
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/imageview_add_task_sheet_tracker_item_remove"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="@dimen/default_margin"
+        android:src="@drawable/ic_add_task_tracker_remove"
+        tools:ignore="ContentDescription" />
+</LinearLayout>

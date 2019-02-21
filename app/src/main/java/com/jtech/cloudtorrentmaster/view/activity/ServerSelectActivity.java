@@ -74,7 +74,7 @@ public class ServerSelectActivity extends BaseActivity implements ServerSelectCo
      *
      * @return
      */
-    private CreateServerInfoSheet getServerInfoSHeet() {
+    private CreateServerInfoSheet getServerInfoSheet() {
         if (null == createServerInfoSheet) {
             this.createServerInfoSheet = CreateServerInfoSheet.build(getActivity())
                     .setServerLogos(presenter.loadServerLogoList())
@@ -93,13 +93,13 @@ public class ServerSelectActivity extends BaseActivity implements ServerSelectCo
         //跳转到主页
         ActivityGoManager.goMainPage(getActivity(), model);
         //关闭sheet并关闭当前页面
-        getServerInfoSHeet().dismiss();
+        getServerInfoSheet().dismiss();
         onBackPressed();
     }
 
     @Override
     public void onItemEditClick(ServerInfoModel model) {
-        getServerInfoSHeet().setEditServerInfo(model)
+        getServerInfoSheet().setEditServerInfo(model)
                 .show();
     }
 
@@ -113,7 +113,7 @@ public class ServerSelectActivity extends BaseActivity implements ServerSelectCo
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.fab_server_select://展开添加页面
-                getServerInfoSHeet().show();
+                getServerInfoSheet().show();
                 break;
             default://默认为关闭按钮
                 onBackPressed();
@@ -157,8 +157,8 @@ public class ServerSelectActivity extends BaseActivity implements ServerSelectCo
     @Override
     public void onBackPressed() {
         //如果创建sheet没有隐藏，则隐藏
-        if (getServerInfoSHeet().isShowing()) {
-            getServerInfoSHeet().dismiss();
+        if (getServerInfoSheet().isShowing()) {
+            getServerInfoSheet().dismiss();
             return;
         }
         super.onBackPressed();

@@ -1,6 +1,7 @@
 package com.jtech.cloudtorrentmaster.utils;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -23,6 +24,7 @@ public class Utils {
     public static String jointMagnet(@NonNull String infoHash, @NonNull String name, @NonNull String... trackers) {
         StringBuilder trackerInfo = new StringBuilder();
         for (String tracker : trackers) {
+            if (TextUtils.isEmpty(tracker)) continue;
             trackerInfo.append("&tr=")
                     .append(tracker);
         }

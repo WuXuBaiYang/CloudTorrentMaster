@@ -22,6 +22,7 @@ import com.jtech.cloudtorrentmaster.model.event.ServerTorrentsEvent;
 import com.jtech.cloudtorrentmaster.model.event.ServerUsersEvent;
 import com.jtech.cloudtorrentmaster.mvp.contract.MainContract;
 import com.jtech.cloudtorrentmaster.mvp.presenter.MainPresenter;
+import com.jtech.cloudtorrentmaster.view.weight.AddTaskSheet;
 import com.jtech.cloudtorrentmaster.view.weight.ServerSelectPopup;
 import com.jtech.cloudtorrentmaster.view.weight.TitleView;
 import com.jtechlib2.util.ImageUtils;
@@ -29,6 +30,8 @@ import com.jtechlib2.view.activity.BaseActivity;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.io.File;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -54,6 +57,7 @@ public class MainActivity extends BaseActivity implements MainContract.View,
     NavigationView navigationView;
 
     private NavigationHeaderViewHolder viewHolder;
+    private AddTaskSheet addTaskSheet;
     private TitleView titleView;
 
     @Override
@@ -133,6 +137,29 @@ public class MainActivity extends BaseActivity implements MainContract.View,
     }
 
     /**
+     * 获取添加任务的sheet
+     *
+     * @return
+     */
+    private AddTaskSheet getAddTaskSheet() {
+        if (null == addTaskSheet) {
+            this.addTaskSheet = AddTaskSheet.build(getActivity())
+                    .setListener(new AddTaskSheet.OnAddTaskListener() {
+                        @Override
+                        public void addMagnetTask(String magnet) {
+                            // TODO: 2019/2/21  
+                        }
+
+                        @Override
+                        public void addTorrentFileTask(File file) {
+                            // TODO: 2019/2/21
+                        }
+                    });
+        }
+        return addTaskSheet;
+    }
+
+    /**
      * 设置服务器信息
      *
      * @param model
@@ -203,10 +230,14 @@ public class MainActivity extends BaseActivity implements MainContract.View,
         return false;
     }
 
+    @OnClick({R.id.fab_main_add_task})
     @Override
     @SuppressLint("RtlHardcoded")
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.fab_main_add_task://添加任务
+                getAddTaskSheet().show();
+                break;
             default://默认为侧滑菜单
                 drawerLayout.openDrawer(Gravity.LEFT);
                 break;
@@ -296,8 +327,15 @@ public class MainActivity extends BaseActivity implements MainContract.View,
 
     @Override
     public void onBackPressed() {
+        //判断服务器切换列表是否展示
         if (viewHolder.dismissPopup()) return;
+        //判断侧滑菜单是否展示
         if (closeNavigation()) return;
+        //判断添加任务sheet是否展示
+        if (getAddTaskSheet().isShowing()) {
+            getAddTaskSheet().dismiss();
+            return;
+        }
         super.onBackPressed();
     }
 }

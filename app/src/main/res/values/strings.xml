@@ -24,4 +24,10 @@
     <string name="dialog_cancel">取消</string>
     <string name="dialog_server_switch">切换</string>
     <string name="main_menu_navigation_setting">服务器/应用设置</string>
+    <string name="add_task_sheet_add_tracker">添加Tracker</string>
+    <string name="add_task_sheet_add_torrent">添加种子</string>
+    <string name="add_task_sheet_tracker_item">Tracker</string>
+    <string name="add_task_tracker">Tracker</string>
+    <string name="add_task_hash">Hash</string>
+    <string name="add_task_name">Name</string>
 </resources>
