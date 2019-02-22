@@ -17,7 +17,9 @@ import androidx.annotation.NonNull;
  */
 public class ParamsCacheManager extends BaseCacheManager {
     //服务器信息列表
-    public final static String KEY_SERVER_INFO_LIST = "keyServerInfoList";
+    private final static String KEY_SERVER_INFO_LIST = "keyServerInfoList";
+    //剪切板中的磁力链记录
+    private final static String KEY_CLIP_MAGNET = "keyClipMagnet";
 
     @SuppressLint("StaticFieldLeak")
     private static ParamsCacheManager manager;
@@ -84,5 +86,23 @@ public class ParamsCacheManager extends BaseCacheManager {
     @Override
     public String getCacheName() {
         return Constants.KEY_CACHE_NAME;
+    }
+
+    /**
+     * 存储剪切板磁力链记录
+     *
+     * @param magnet
+     */
+    public void setClipMagnet(@NonNull String magnet) {
+        put(KEY_CLIP_MAGNET, magnet);
+    }
+
+    /**
+     * 获取剪切板中的磁力链记录
+     *
+     * @return
+     */
+    public String getClipMagnet() {
+        return getString(KEY_CLIP_MAGNET);
     }
 }

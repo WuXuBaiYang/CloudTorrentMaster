@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.google.android.material.navigation.NavigationView;
 import com.jtech.cloudtorrentmaster.R;
 import com.jtech.cloudtorrentmaster.manager.ActivityGoManager;
+import com.jtech.cloudtorrentmaster.manager.ParamsCacheManager;
 import com.jtech.cloudtorrentmaster.model.ServerInfoModel;
 import com.jtech.cloudtorrentmaster.model.event.ServerConnectEvent;
 import com.jtech.cloudtorrentmaster.model.event.ServerDownloadsEvent;
@@ -71,6 +72,9 @@ public class MainActivity extends BaseActivity implements MainContract.View,
     protected void initVariables(Bundle bundle) {
         //绑定P类
         presenter = new MainPresenter(getActivity(), this, bundle);
+        //获取剪切板中的磁力链记录
+        this.clipMagnet = ParamsCacheManager.get(getActivity())
+                .getClipMagnet();
     }
 
     @Override
@@ -216,6 +220,8 @@ public class MainActivity extends BaseActivity implements MainContract.View,
      * @param magnet
      */
     private void showClipMagnetDialog(@NonNull String magnet) {
+        this.clipMagnet = magnet;
+        ParamsCacheManager.get(getActivity()).setClipMagnet(magnet);
         new AlertDialog.Builder(getActivity())
                 .setTitle(R.string.dialog_find_magnet)
                 .setMessage(magnet)
@@ -235,7 +241,6 @@ public class MainActivity extends BaseActivity implements MainContract.View,
         this.clipMagnetFlag = true;
         for (String magnet : Utils.findMagnetInClipBoard(getActivity())) {
             if (!magnet.equals(clipMagnet)) {
-                this.clipMagnet = magnet;
                 showClipMagnetDialog(magnet);
                 break;
             }
