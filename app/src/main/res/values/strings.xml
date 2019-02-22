@@ -39,4 +39,15 @@
     <string name="add_task_success">任务已添加</string>
     <string name="dialog_add_task">添加到下载任务</string>
     <string name="dialog_find_magnet">发现磁力链</string>
+    <string name="server_stats_preview_disk">磁盘：%s</string>
+    <string name="server_stats_disk">磁盘：%s/%s(%s)</string>
+    <string name="server_stats_preview_memory">内存：%s</string>
+    <string name="server_stats_memory">内存：%s/%s(%s)</string>
+    <string name="server_stats_cpu">CPU：%s</string>
+    <string name="server_stats_users">已连接用户(%d)：</string>
+    <string name="server_stats_runtime">运行时：%s</string>
+    <string name="server_stats_go_memory">Go内存：%s</string>
+    <string name="server_stats_go_routines">Go并发：%d</string>
+    <string name="server_stats_uptime">更新时间%s</string>
+    <string name="server_stats_title">%s v%s</string>
 </resources>

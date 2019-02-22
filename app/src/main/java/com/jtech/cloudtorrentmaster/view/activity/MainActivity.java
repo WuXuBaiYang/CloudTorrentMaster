@@ -3,6 +3,7 @@ package com.jtech.cloudtorrentmaster.view.activity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.format.Formatter;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
@@ -29,17 +31,21 @@ import com.jtech.cloudtorrentmaster.mvp.contract.MainContract;
 import com.jtech.cloudtorrentmaster.mvp.presenter.MainPresenter;
 import com.jtech.cloudtorrentmaster.utils.ToastUtils;
 import com.jtech.cloudtorrentmaster.utils.Utils;
+import com.jtech.cloudtorrentmaster.view.adapter.ServerStatsUserAdapter;
 import com.jtech.cloudtorrentmaster.view.weight.AddTaskSheet;
 import com.jtech.cloudtorrentmaster.view.weight.LoadingDialog;
 import com.jtech.cloudtorrentmaster.view.weight.ServerSelectPopup;
 import com.jtech.cloudtorrentmaster.view.weight.TitleView;
 import com.jtechlib2.util.ImageUtils;
 import com.jtechlib2.view.activity.BaseActivity;
+import com.jtechlib2.view.recycler.JRecyclerView;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -48,6 +54,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.GridLayoutManager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -441,8 +448,65 @@ public class MainActivity extends BaseActivity implements MainContract.View,
      * 状态卡片试图持有
      */
     class StatsCardViewHolder {
+        @BindView(R.id.imageview_main_content_stats_arrow)
+        ImageView imageViewArrow;
+        @BindView(R.id.textview_main_content_stats_preview_title)
+        TextView textViewPreviewTitle;
+        @BindView(R.id.textview_main_content_stats_preview_disk)
+        TextView textViewPreviewDisk;
+        @BindView(R.id.textview_main_content_stats_preview_memory)
+        TextView textViewPreviewMemory;
+        @BindView(R.id.textview_main_content_stats_preview_cpu)
+        TextView textViewPreviewCPU;
+
+        @BindView(R.id.linearlayout_main_content_stats)
+        LinearLayout linearLayoutStats;
+        @BindView(R.id.textview_main_content_stats_title)
+        TextView textViewTitle;
+        @BindView(R.id.textview_main_content_stats_disk)
+        TextView textViewDisk;
+        @BindView(R.id.textview_main_content_stats_memory)
+        TextView textViewMemory;
+        @BindView(R.id.textview_main_content_stats_cpu)
+        TextView textViewCPU;
+        @BindView(R.id.textview_main_content_stats_runtime)
+        TextView textViewRunTime;
+        @BindView(R.id.textview_main_content_stats_go_memory)
+        TextView textViewGoMemory;
+        @BindView(R.id.textview_main_content_stats_go_routines)
+        TextView textViewGoRoutines;
+        @BindView(R.id.textview_main_content_stats_uptime)
+        TextView textViewUptime;
+        @BindView(R.id.textview_main_content_stats_users)
+        TextView textViewUsers;
+        @BindView(R.id.jrecyclerview_main_content_stats_users)
+        JRecyclerView jRecyclerViewUsers;
+
+        private ServerStatsUserAdapter userAdapter;
+
         StatsCardViewHolder(View itemView) {
             ButterKnife.bind(this, itemView);
+            //设置已连接用户列表
+            jRecyclerViewUsers.setLayoutManager(
+                    new GridLayoutManager(getActivity(), 2));
+            userAdapter = new ServerStatsUserAdapter(getActivity());
+            jRecyclerViewUsers.setAdapter(userAdapter);
+            //设置默认值
+            updateStats(new ServerStatsModel());
+        }
+
+        /**
+         * 计算比例
+         *
+         * @param used
+         * @param total
+         * @return
+         */
+        private String getRatio(long used, long total) {
+            if (total <= 0) return 0 + "%";
+            return BigDecimal.valueOf(used)
+                    .divide(BigDecimal.valueOf(total), 2, RoundingMode.DOWN)
+                    .doubleValue() + "%";
         }
 
         /**
@@ -451,7 +515,52 @@ public class MainActivity extends BaseActivity implements MainContract.View,
          * @param model
          */
         void updateStats(@NonNull ServerStatsModel model) {
-            // TODO: 2019/2/22
+            ServerStatsModel.SystemModel systemModel = model.getSystem();
+            //设置服务器名称
+            textViewPreviewTitle.setText(model.getTitle());
+            textViewTitle.setText(String.format(getString(
+                    R.string.server_stats_title), model.getTitle(), model.getVersion()));
+            //设置磁盘使用率
+            String diskUsed = Formatter.formatFileSize(
+                    getActivity(), systemModel.getDiskUsed());
+            String diskTotal = Formatter.formatFileSize(
+                    getActivity(), systemModel.getDiskTotal());
+            String diskRatio = getRatio(
+                    systemModel.getDiskUsed(), systemModel.getDiskTotal());
+            textViewPreviewDisk.setText(String.format(
+                    getString(R.string.server_stats_preview_disk), String.valueOf(diskRatio)));
+            textViewDisk.setText(String.format(
+                    getString(R.string.server_stats_disk), diskUsed, diskTotal, diskRatio));
+            //设置内存使用率
+            String memoryUsed = Formatter.formatFileSize(
+                    getActivity(), systemModel.getMemoryUsed());
+            String memoryTotal = Formatter.formatFileSize(
+                    getActivity(), systemModel.getMemoryTotal());
+            String memoryRatio = getRatio(systemModel.getMemoryUsed(),
+                    systemModel.getMemoryTotal());
+            textViewPreviewMemory.setText(String.format(
+                    getString(R.string.server_stats_preview_memory), memoryRatio));
+            textViewMemory.setText(String.format(
+                    getString(R.string.server_stats_memory), memoryUsed, memoryTotal, memoryRatio));
+            //设置cpu使用率
+            String cpuRatio = BigDecimal.valueOf(systemModel.getCpu())
+                    .setScale(2, RoundingMode.DOWN).doubleValue() + "%";
+            textViewPreviewCPU.setText(String.format(
+                    getString(R.string.server_stats_cpu), cpuRatio));
+            textViewCPU.setText(String.format(
+                    getString(R.string.server_stats_cpu), cpuRatio));
+            //设置运行时环境版本号
+            textViewRunTime.setText(String.format(
+                    getString(R.string.server_stats_runtime), model.getRuntime()));
+            //设置GoMemory
+            textViewGoMemory.setText(String.format(getString(R.string.server_stats_go_memory),
+                    Formatter.formatFileSize(getActivity(), systemModel.getGoMemory())));
+            //设置go并发
+            textViewGoRoutines.setText(String.format(getString(
+                    R.string.server_stats_go_routines), systemModel.getGoRoutines()));
+            //设置更新时间
+            textViewUptime.setText(String.format(getString(
+                    R.string.server_stats_uptime), model.getUptime()));
         }
 
         /**
@@ -460,7 +569,51 @@ public class MainActivity extends BaseActivity implements MainContract.View,
          * @param models
          */
         void updateUsers(@NonNull List<ServerUserModel> models) {
-            // TODO: 2019/2/22
+            textViewUsers.setText(String.format(
+                    getString(R.string.server_stats_users), models.size()));
+            userAdapter.setDatas(models);
+        }
+
+        /**
+         * 是否展开发片
+         *
+         * @param isExpand
+         */
+        void expandCard(boolean isExpand) {
+            linearLayoutStats.setVisibility(isExpand ? View.VISIBLE : View.GONE);
+        }
+
+        /**
+         * 切换卡片状态
+         *
+         * @param v
+         */
+        void switchCard(View v) {
+            v.setSelected(!v.isSelected());
+            expandCard(v.isSelected());
+            rotationArrow(v.isSelected());
+            downloadsCardViewHolder.expandCard(false);
+            torrentsCardViewHolder.expandCard(false);
+        }
+
+        /**
+         * 旋转箭头
+         *
+         * @param isUp
+         */
+        private void rotationArrow(boolean isUp) {
+            Animation animation = AnimationUtils.loadAnimation(getActivity(),
+                    isUp ? R.anim.arrow_rotation_up : R.anim.arrow_rotation_down);
+            imageViewArrow.startAnimation(animation);
+        }
+
+        @OnClick(R.id.cardview_main_content_stats)
+        void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.cardview_main_content_stats://状态卡片展开或收起
+                    switchCard(v);
+                    break;
+            }
         }
     }
 
@@ -480,6 +633,15 @@ public class MainActivity extends BaseActivity implements MainContract.View,
         void update(@NonNull ServerDownloadsModel model) {
             // TODO: 2019/2/22
         }
+
+        /**
+         * 是否展开卡片
+         *
+         * @param isExpand
+         */
+        void expandCard(boolean isExpand) {
+//            linearLayoutStats.setVisibility(isExpand ? View.VISIBLE : View.GONE);
+        }
     }
 
     /**
@@ -497,6 +659,15 @@ public class MainActivity extends BaseActivity implements MainContract.View,
          */
         void update(@NonNull List<ServerTorrentModel> models) {
             // TODO: 2019/2/22
+        }
+
+        /**
+         * 是否展开卡片
+         *
+         * @param isExpand
+         */
+        void expandCard(boolean isExpand) {
+//            linearLayoutStats.setVisibility(isExpand ? View.VISIBLE : View.GONE);
         }
     }
 }
