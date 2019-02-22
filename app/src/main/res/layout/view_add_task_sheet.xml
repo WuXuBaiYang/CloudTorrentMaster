@@ -63,9 +63,47 @@
         app:contentPaddingTop="@dimen/vertical_margin">
 
         <LinearLayout
+            android:id="@+id/linearlayout_add_task_torrent_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/default_margin">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="@dimen/add_task_torrent_file_icon_size"
+                    android:layout_height="@dimen/add_task_torrent_file_icon_size"
+                    android:src="@drawable/ic_torrent_file_icon" />
+
+                <ImageView
+                    android:id="@+id/imageview_add_task_torrent_cancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:src="@drawable/ic_torrent_file_cancel" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/textview_add_task_torrent_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/default_margin"
+                android:textColor="?android:textColorSecondary"
+                android:textSize="@dimen/text_size_normal" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/linearlayout_add_task_magnet_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@android:color/white"
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:orientation="vertical"
@@ -192,29 +230,6 @@
                 android:paddingBottom="@dimen/vertical_margin"
                 android:text="@string/add_task_sheet_add_tracker"
                 android:textColor="?colorAccent"
-                android:textSize="@dimen/text_size_normal" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/linearlayout_add_task_torrent_info"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="@dimen/default_margin">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/ic_launcher_round" />
-
-            <TextView
-                android:id="@+id/textview_add_task_torrent_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/default_margin"
-                android:text="种子名称，不限制长度"
-                android:textColor="?android:textColorSecondary"
                 android:textSize="@dimen/text_size_normal" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>

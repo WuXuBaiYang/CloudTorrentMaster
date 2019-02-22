@@ -2,9 +2,9 @@ package com.jtech.cloudtorrentmaster.view.weight;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -17,8 +17,9 @@ import android.widget.TextView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.textfield.TextInputLayout;
 import com.jtech.cloudtorrentmaster.R;
-import com.jtech.cloudtorrentmaster.utils.ToastUtils;
 import com.jtech.cloudtorrentmaster.utils.Utils;
+import com.leon.lfilepickerlibrary.LFilePicker;
+import com.leon.lfilepickerlibrary.utils.Constant;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -57,12 +59,10 @@ public class AddTaskSheet extends BottomSheetDialog implements DialogInterface.O
     TextView textViewTorrentName;
 
     private OnAddTaskListener listener;
-    private Activity activity;
     private File torrentFile;
 
-    private AddTaskSheet(@NonNull Activity context, int theme) {
+    private AddTaskSheet(@NonNull Context context, int theme) {
         super(context, theme);
-        this.activity = context;
         //设置dismiss监听
         setOnDismissListener(this);
         //设置主视图
@@ -81,7 +81,7 @@ public class AddTaskSheet extends BottomSheetDialog implements DialogInterface.O
      * @param context
      * @return
      */
-    public static AddTaskSheet build(@NonNull Activity context) {
+    public static AddTaskSheet build(@NonNull Context context) {
         return new AddTaskSheet(context, R.style.BottomSheetDialog);
     }
 
@@ -101,11 +101,15 @@ public class AddTaskSheet extends BottomSheetDialog implements DialogInterface.O
      *
      * @return
      */
-    private void pickTorrent() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("application/x-bittorrent");
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        activity.startActivityForResult(intent, REQUEST_CODE_PICK_TORRENT);
+    public static void pickTorrent(Activity activity) {
+        new LFilePicker()
+                .withActivity(activity)
+                .withRequestCode(REQUEST_CODE_PICK_TORRENT)
+                .withStartPath("/storage/emulated/0")//指定初始显示路径
+                .withChooseMode(true)
+                .withFileFilter(new String[]{".torrent"})
+                .withMaxNum(1)
+                .start();
     }
 
     /**
@@ -116,26 +120,13 @@ public class AddTaskSheet extends BottomSheetDialog implements DialogInterface.O
      * @param data
      * @return
      */
-    public boolean handlePickTorrentResult(int requestCode, int resultCode, @NonNull Intent data) {
+    public boolean handlePickTorrentResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == REQUEST_CODE_PICK_TORRENT && resultCode == RESULT_OK) {
-            Uri uri = data.getData();
-            if (null != uri) {
-                String filePath = Utils.getPath(getContext(), uri);
-                if (!TextUtils.isEmpty(filePath)) {
-                    File file = new File(filePath);
-                    if (file.exists()) {
-                        setTorrentFileInfo(file);
-                    } else {
-                        ToastUtils.makeShort(linearLayoutTrackers,
-                                R.string.add_task_sheet_not_found_torrent).show();
-                    }
-                } else {
-                    ToastUtils.makeShort(linearLayoutTrackers,
-                            R.string.add_task_sheet_torrent_unexists).show();
+            if (null != data) {
+                List<String> filePaths = data.getStringArrayListExtra(Constant.RESULT_INFO);
+                if (filePaths.size() > 0) {
+                    setTorrentFileInfo(new File(filePaths.get(0)));
                 }
-            } else {
-                ToastUtils.makeShort(linearLayoutTrackers,
-                        R.string.add_task_sheet_system_error).show();
             }
             return true;
         }
@@ -151,12 +142,10 @@ public class AddTaskSheet extends BottomSheetDialog implements DialogInterface.O
         this.torrentFile = file;
         textViewAddTorrent.setText(R.string.add_task_sheet_replace_torrent);
         //显示种子信息隐藏磁力链信息
-        linearLayoutTorrentInfo.setVisibility(View.VISIBLE);
+//        linearLayoutTorrentInfo.setVisibility(View.VISIBLE);
         linearLayoutMagnetInfo.setVisibility(View.GONE);
         //设置种子名称
         textViewTorrentName.setText(file.getName());
-        //设置删除种子操作
-        // TODO: 2019/2/21
     }
 
     /**
@@ -178,7 +167,7 @@ public class AddTaskSheet extends BottomSheetDialog implements DialogInterface.O
         //隐藏种子信息
         textViewAddTorrent.setText(R.string.add_task_sheet_add_torrent);
         linearLayoutMagnetInfo.setVisibility(View.VISIBLE);
-        linearLayoutTorrentInfo.setVisibility(View.GONE);
+        torrentFile = null;
     }
 
     /**
@@ -257,12 +246,15 @@ public class AddTaskSheet extends BottomSheetDialog implements DialogInterface.O
             R.id.textview_add_task_add_tracker,
             R.id.imageview_add_task_name_paste,
             R.id.imageview_add_task_hash_paste,
-            R.id.imageview_add_task_tracker_paste})
+            R.id.imageview_add_task_tracker_paste,
+            R.id.imageview_add_task_torrent_cancel})
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.textview_add_task_add_torrent://种子添加
-                pickTorrent();
+                if (null != listener) {
+                    listener.pickTorrentFile();
+                }
                 break;
             case R.id.textview_add_task_add_tracker://添加tracker服务器
                 addTrackerItem();
@@ -285,6 +277,12 @@ public class AddTaskSheet extends BottomSheetDialog implements DialogInterface.O
                 setPasteWithInput(Objects.requireNonNull(
                         textInputLayoutTracker.getEditText()));
                 break;
+            case R.id.imageview_add_task_torrent_cancel://移除种子操作
+                //隐藏种子信息
+                textViewAddTorrent.setText(R.string.add_task_sheet_add_torrent);
+                linearLayoutMagnetInfo.setVisibility(View.VISIBLE);
+                torrentFile = null;
+                break;
         }
     }
 
@@ -300,6 +298,8 @@ public class AddTaskSheet extends BottomSheetDialog implements DialogInterface.O
         void addMagnetTask(String magnet);
 
         void addTorrentFileTask(File file);
+
+        void pickTorrentFile();
     }
 
     /**

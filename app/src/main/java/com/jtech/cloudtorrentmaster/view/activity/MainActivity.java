@@ -33,7 +33,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
-import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -156,6 +155,12 @@ public class MainActivity extends BaseActivity implements MainContract.View,
                         @Override
                         public void addTorrentFileTask(File file) {
                             // TODO: 2019/2/21
+                        }
+
+                        @Override
+                        public void pickTorrentFile() {
+                            //选择种子文件
+                            AddTaskSheet.pickTorrent(getActivity());
                         }
                     });
         }
@@ -346,7 +351,6 @@ public class MainActivity extends BaseActivity implements MainContract.View,
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //处理种子文件选择返回值
-        getAddTaskSheet().handlePickTorrentResult(requestCode,
-                resultCode, Objects.requireNonNull(data));
+        getAddTaskSheet().handlePickTorrentResult(requestCode, resultCode, data);
     }
 }
