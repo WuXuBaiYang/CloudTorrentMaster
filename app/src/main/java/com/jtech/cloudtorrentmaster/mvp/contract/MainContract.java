@@ -18,6 +18,8 @@ public interface MainContract {
         void addMagnetTask(String magnet);
 
         void addTorrentTask(File file);
+
+        void initServer();
     }
 
     interface View extends BaseContract.View {

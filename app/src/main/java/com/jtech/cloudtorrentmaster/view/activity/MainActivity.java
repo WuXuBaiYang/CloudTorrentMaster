@@ -16,8 +16,11 @@ import com.google.android.material.navigation.NavigationView;
 import com.jtech.cloudtorrentmaster.R;
 import com.jtech.cloudtorrentmaster.manager.ActivityGoManager;
 import com.jtech.cloudtorrentmaster.manager.ParamsCacheManager;
+import com.jtech.cloudtorrentmaster.model.ServerDownloadsModel;
 import com.jtech.cloudtorrentmaster.model.ServerInfoModel;
-import com.jtech.cloudtorrentmaster.model.event.ServerConnectEvent;
+import com.jtech.cloudtorrentmaster.model.ServerStatsModel;
+import com.jtech.cloudtorrentmaster.model.ServerTorrentModel;
+import com.jtech.cloudtorrentmaster.model.ServerUserModel;
 import com.jtech.cloudtorrentmaster.model.event.ServerDownloadsEvent;
 import com.jtech.cloudtorrentmaster.model.event.ServerStatsEvent;
 import com.jtech.cloudtorrentmaster.model.event.ServerTorrentsEvent;
@@ -37,11 +40,13 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -61,12 +66,22 @@ public class MainActivity extends BaseActivity implements MainContract.View,
     DrawerLayout drawerLayout;
     @BindView(R.id.navigationview_main)
     NavigationView navigationView;
+    @BindView(R.id.cardview_main_content_stats)
+    CardView cardViewStats;
+    @BindView(R.id.cardview_main_content_downloads)
+    CardView cardViewDownloads;
+    @BindView(R.id.cardview_main_content_torrents)
+    CardView cardViewTorrents;
 
+    private DownloadsCardViewHolder downloadsCardViewHolder;
+    private TorrentsCardViewHolder torrentsCardViewHolder;
+    private StatsCardViewHolder statsCardViewHolder;
     private NavigationHeaderViewHolder viewHolder;
     private AddTaskSheet addTaskSheet;
     private TitleView titleView;
-    private String clipMagnet;//剪切板中的磁力链，用做缓存
+
     private boolean clipMagnetFlag = false;//剪切板中的磁力链读取标记
+    private String clipMagnet;//剪切板中的磁力链，用做缓存
 
     @Override
     protected void initVariables(Bundle bundle) {
@@ -91,10 +106,16 @@ public class MainActivity extends BaseActivity implements MainContract.View,
                 navigationView.getHeaderView(0));
         //设置服务器信息
         setupServerInfo(presenter.getServerInfo());
+        //实例化卡片持有对象
+        downloadsCardViewHolder = new DownloadsCardViewHolder(cardViewDownloads);
+        torrentsCardViewHolder = new TorrentsCardViewHolder(cardViewTorrents);
+        statsCardViewHolder = new StatsCardViewHolder(cardViewStats);
     }
 
     @Override
     protected void loadData() {
+        //初始化服务器
+        presenter.initServer();
     }
 
     /**
@@ -104,7 +125,9 @@ public class MainActivity extends BaseActivity implements MainContract.View,
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onServerStatsEvent(ServerStatsEvent event) {
-        // TODO: 2019/2/20
+        if (null != statsCardViewHolder) {
+            statsCardViewHolder.updateStats(event.getModel());
+        }
     }
 
     /**
@@ -114,17 +137,9 @@ public class MainActivity extends BaseActivity implements MainContract.View,
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onServerUsersEvent(ServerUsersEvent event) {
-        // TODO: 2019/2/20
-    }
-
-    /**
-     * 服务器链接状态
-     *
-     * @param event
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onServerConnect(ServerConnectEvent event) {
-        // TODO: 2019/2/20
+        if (null != statsCardViewHolder) {
+            statsCardViewHolder.updateUsers(event.getModels());
+        }
     }
 
     /**
@@ -134,7 +149,9 @@ public class MainActivity extends BaseActivity implements MainContract.View,
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onServerDownloadsEvent(ServerDownloadsEvent event) {
-        // TODO: 2019/2/20
+        if (null != downloadsCardViewHolder) {
+            downloadsCardViewHolder.update(event.getModel());
+        }
     }
 
     /**
@@ -144,7 +161,9 @@ public class MainActivity extends BaseActivity implements MainContract.View,
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onServerTorrentsEvent(ServerTorrentsEvent event) {
-        // TODO: 2019/2/20
+        if (null != torrentsCardViewHolder) {
+            torrentsCardViewHolder.update(event.getModels());
+        }
     }
 
     /**
@@ -416,5 +435,68 @@ public class MainActivity extends BaseActivity implements MainContract.View,
         super.onActivityResult(requestCode, resultCode, data);
         //处理种子文件选择返回值
         getAddTaskSheet().handlePickTorrentResult(requestCode, resultCode, data);
+    }
+
+    /**
+     * 状态卡片试图持有
+     */
+    class StatsCardViewHolder {
+        StatsCardViewHolder(View itemView) {
+            ButterKnife.bind(this, itemView);
+        }
+
+        /**
+         * 更新服务器状态
+         *
+         * @param model
+         */
+        void updateStats(@NonNull ServerStatsModel model) {
+            // TODO: 2019/2/22
+        }
+
+        /**
+         * 更新已连接的用户列表
+         *
+         * @param models
+         */
+        void updateUsers(@NonNull List<ServerUserModel> models) {
+            // TODO: 2019/2/22
+        }
+    }
+
+    /**
+     * 已下载文件试图持有
+     */
+    class DownloadsCardViewHolder {
+        DownloadsCardViewHolder(View itemView) {
+            ButterKnife.bind(this, itemView);
+        }
+
+        /**
+         * 更新服务器已下载文件信息
+         *
+         * @param model
+         */
+        void update(@NonNull ServerDownloadsModel model) {
+            // TODO: 2019/2/22
+        }
+    }
+
+    /**
+     * 服务器下载任务卡片试图持有
+     */
+    class TorrentsCardViewHolder {
+        TorrentsCardViewHolder(View itemView) {
+            ButterKnife.bind(this, itemView);
+        }
+
+        /**
+         * 更新服务器下载任务列表
+         *
+         * @param models
+         */
+        void update(@NonNull List<ServerTorrentModel> models) {
+            // TODO: 2019/2/22
+        }
     }
 }

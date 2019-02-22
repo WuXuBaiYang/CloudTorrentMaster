@@ -35,6 +35,10 @@ public class MainPresenter implements MainContract.Presenter {
         if (null != bundle) {
             this.model = (ServerInfoModel) bundle.getSerializable(MainActivity.KEY_SERVER_INFO);
         }
+    }
+
+    @Override
+    public void initServer() {
         if (null != model) {
             //初始化离线服务器接口
             API.get().initCloudTorrentApi(
