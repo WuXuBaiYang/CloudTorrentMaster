@@ -34,4 +34,9 @@
     <string name="add_task_sheet_torrent_unexists">获取不到文件目录</string>
     <string name="add_task_sheet_system_error">系统错误，请重试</string>
     <string name="add_task_sheet_replace_torrent">更换种子</string>
+    <string name="add_task_magnet_loading">正在添加磁力链任务</string>
+    <string name="add_task_torrent_loading">正在添加种子任务</string>
+    <string name="add_task_success">任务已添加</string>
+    <string name="dialog_add_task">添加到下载任务</string>
+    <string name="dialog_find_magnet">发现磁力链</string>
 </resources>

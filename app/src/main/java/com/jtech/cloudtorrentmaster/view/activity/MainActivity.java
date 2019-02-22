@@ -23,7 +23,10 @@ import com.jtech.cloudtorrentmaster.model.event.ServerTorrentsEvent;
 import com.jtech.cloudtorrentmaster.model.event.ServerUsersEvent;
 import com.jtech.cloudtorrentmaster.mvp.contract.MainContract;
 import com.jtech.cloudtorrentmaster.mvp.presenter.MainPresenter;
+import com.jtech.cloudtorrentmaster.utils.ToastUtils;
+import com.jtech.cloudtorrentmaster.utils.Utils;
 import com.jtech.cloudtorrentmaster.view.weight.AddTaskSheet;
+import com.jtech.cloudtorrentmaster.view.weight.LoadingDialog;
 import com.jtech.cloudtorrentmaster.view.weight.ServerSelectPopup;
 import com.jtech.cloudtorrentmaster.view.weight.TitleView;
 import com.jtechlib2.util.ImageUtils;
@@ -61,6 +64,8 @@ public class MainActivity extends BaseActivity implements MainContract.View,
     private NavigationHeaderViewHolder viewHolder;
     private AddTaskSheet addTaskSheet;
     private TitleView titleView;
+    private String clipMagnet;//剪切板中的磁力链，用做缓存
+    private boolean clipMagnetFlag = false;//剪切板中的磁力链读取标记
 
     @Override
     protected void initVariables(Bundle bundle) {
@@ -149,12 +154,16 @@ public class MainActivity extends BaseActivity implements MainContract.View,
                     .setListener(new AddTaskSheet.OnAddTaskListener() {
                         @Override
                         public void addMagnetTask(String magnet) {
-                            // TODO: 2019/2/21  
+                            presenter.addMagnetTask(magnet);
+                            LoadingDialog.showProgressDialog(getActivity(),
+                                    getString(R.string.add_task_magnet_loading));
                         }
 
                         @Override
                         public void addTorrentFileTask(File file) {
-                            // TODO: 2019/2/21
+                            presenter.addTorrentTask(file);
+                            LoadingDialog.showProgressDialog(getActivity(),
+                                    getString(R.string.add_task_torrent_loading));
                         }
 
                         @Override
@@ -199,6 +208,56 @@ public class MainActivity extends BaseActivity implements MainContract.View,
                     //关闭当前页面
                     MainActivity.super.onBackPressed();
                 }).show();
+    }
+
+    /**
+     * 显示剪切板中的磁力链
+     *
+     * @param magnet
+     */
+    private void showClipMagnetDialog(@NonNull String magnet) {
+        new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.dialog_find_magnet)
+                .setMessage(magnet)
+                .setNegativeButton(R.string.dialog_cancel, null)
+                .setPositiveButton(R.string.dialog_add_task, (dialog, which) -> {
+                    LoadingDialog.showProgressDialog(getActivity(),
+                            getString(R.string.add_task_magnet_loading));
+                    presenter.addMagnetTask(magnet);
+                }).show();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //已经读取过剪切板则不需要重复读取
+        if (clipMagnetFlag) return;
+        this.clipMagnetFlag = true;
+        for (String magnet : Utils.findMagnetInClipBoard(getActivity())) {
+            if (!magnet.equals(clipMagnet)) {
+                this.clipMagnet = magnet;
+                showClipMagnetDialog(magnet);
+                break;
+            }
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        this.clipMagnetFlag = false;
+    }
+
+    @Override
+    public void addTaskSuccess() {
+        LoadingDialog.dismissProgressDialog();
+        ToastUtils.makeShort(titleView.getToolbar(), R.string.add_task_success).show();
+    }
+
+    @Override
+    public void addTaskFail(String error) {
+        LoadingDialog.dismissProgressDialog();
+        ToastUtils.makeShort(titleView.getToolbar(), error).show();
     }
 
     /**

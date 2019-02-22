@@ -11,7 +11,14 @@ import com.jtech.cloudtorrentmaster.mvp.contract.MainContract;
 import com.jtech.cloudtorrentmaster.net.API;
 import com.jtech.cloudtorrentmaster.view.activity.MainActivity;
 
+import java.io.File;
 import java.util.List;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 
 /**
  * 主页
@@ -56,5 +63,33 @@ public class MainPresenter implements MainContract.Presenter {
             }
         }
         return list;
+    }
+
+    @Override
+    public void addMagnetTask(String magnet) {
+        API.get().cloudTorrentApi()
+                .addMagnetTask(RequestBody.create(
+                        MediaType.parse("application/json;charset=UTF-8"), magnet))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> view.addTaskSuccess(), throwable ->
+                        view.addTaskFail(throwable.getMessage()))
+                .isDisposed();
+    }
+
+    @Override
+    public void addTorrentTask(File file) {
+        API.get().cloudTorrentApi()
+                .addTorrentTask(RequestBody.create(
+                        MediaType.parse("application/json;charset=UTF-8"), file))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> view.addTaskSuccess(), new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        view.addTaskFail(throwable.getMessage());
+                    }
+                })
+                .isDisposed();
     }
 }

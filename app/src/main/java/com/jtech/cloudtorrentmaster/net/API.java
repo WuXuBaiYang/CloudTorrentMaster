@@ -6,6 +6,7 @@ import com.google.gson.internal.bind.DateTypeAdapter;
 import com.jtechlib2.net.BaseApi;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -43,7 +44,8 @@ public class API extends BaseApi {
                 .registerTypeAdapter(Date.class, new DateTypeAdapter())
                 .create();
         OkHttpClient.Builder builder = new OkHttpClient()
-                .newBuilder();
+                .newBuilder()
+                .connectTimeout(25 * 1000, TimeUnit.MILLISECONDS);
         cloudTorrentApi = create(builder.build(),
                 JGsonConverterFactory.create(gson), RxJava2CallAdapterFactory.create(), baseUrl, CloudTorrentApi.class);
     }

@@ -3,6 +3,7 @@ package com.jtech.cloudtorrentmaster.mvp.contract;
 import com.jtech.cloudtorrentmaster.model.ServerInfoModel;
 import com.jtechlib2.contract.BaseContract;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -13,8 +14,15 @@ public interface MainContract {
         ServerInfoModel getServerInfo();
 
         List<ServerInfoModel> loadServerInfoList(boolean withoutCurrent);
+
+        void addMagnetTask(String magnet);
+
+        void addTorrentTask(File file);
     }
 
     interface View extends BaseContract.View {
+        void addTaskSuccess();
+
+        void addTaskFail(String error);
     }
 }

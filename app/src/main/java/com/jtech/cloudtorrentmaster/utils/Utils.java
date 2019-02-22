@@ -1,13 +1,20 @@
 package com.jtech.cloudtorrentmaster.utils;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import androidx.annotation.NonNull;
+
+import static android.content.Context.CLIPBOARD_SERVICE;
 
 /**
  * 常用工具类
@@ -42,6 +49,37 @@ public class Utils {
         String regex = "[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}";
         return Pattern.compile(regex)
                 .matcher(ipAddress)
+                .matches();
+    }
+
+    /**
+     * 从剪切板中找到所有的磁力链
+     *
+     * @param context
+     * @return
+     */
+    public static List<String> findMagnetInClipBoard(Context context) {
+        List<String> magnets = new ArrayList<>();
+        ClipboardManager clipboardManager = (ClipboardManager)
+                context.getSystemService(CLIPBOARD_SERVICE);
+        ClipData clipData = clipboardManager.getPrimaryClip();
+        for (int i = 0; i < Objects.requireNonNull(clipData).getItemCount(); i++) {
+            String text = clipData.getItemAt(i).getText().toString();
+            if (Utils.isMagnet(text)) magnets.add(text);
+        }
+        return magnets;
+    }
+
+    /**
+     * 判断是否为磁力链
+     *
+     * @param magnet
+     * @return
+     */
+    public static boolean isMagnet(String magnet) {
+        String regex = "^(magnet:\\?xt=urn:btih:)[0-9a-fA-F]{40}.*$";
+        return Pattern.compile(regex)
+                .matcher(magnet)
                 .matches();
     }
 
