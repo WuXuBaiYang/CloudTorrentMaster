@@ -194,7 +194,8 @@
                     <com.jtechlib2.view.recycler.JRecyclerView
                         android:id="@+id/jrecyclerview_main_content_stats_users"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/vertical_margin" />
                 </LinearLayout>
 
                 <ImageView

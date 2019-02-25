@@ -48,6 +48,6 @@
     <string name="server_stats_runtime">运行时：%s</string>
     <string name="server_stats_go_memory">Go内存：%s</string>
     <string name="server_stats_go_routines">Go并发：%d</string>
-    <string name="server_stats_uptime">更新时间%s</string>
+    <string name="server_stats_uptime">更新时间：%s</string>
     <string name="server_stats_title">%s v%s</string>
 </resources>
