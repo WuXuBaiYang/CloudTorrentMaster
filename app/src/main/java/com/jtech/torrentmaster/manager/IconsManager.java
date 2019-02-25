@@ -80,4 +80,43 @@ public class IconsManager {
         if (null == iconsLogoMap) return new ArrayList<>();
         return new ArrayList<>(iconsLogoMap.entrySet());
     }
+
+    /**
+     * 获取文件夹类型icon
+     *
+     * @return
+     */
+    public Uri getFolderTypeIcon() {
+        return getFileTypeIcon("folder");
+    }
+
+    /**
+     * 获取文件类型图标通过文件文明(词缀)
+     *
+     * @param fileName
+     * @return
+     */
+    public Uri getFileTypeIconByFileName(@NonNull String fileName) {
+        //获取文件词缀
+        String suffix = fileName.contains(".") ?
+                fileName.substring(fileName.lastIndexOf(".")) : "";
+        switch (suffix) {
+            case "png"://图片类型
+                // TODO: 2019/2/25 判断更多类型
+                return getFileTypeIcon("image");
+            default://默认返回未知文件类型
+                return getFileTypeIcon("unknown");
+        }
+    }
+
+    /**
+     * 获取文件类型图标
+     *
+     * @param key
+     * @return
+     */
+    public Uri getFileTypeIcon(@NonNull String key) {
+        if (null == iconsFileTypeMap) return Uri.EMPTY;
+        return iconsFileTypeMap.get(key);
+    }
 }
