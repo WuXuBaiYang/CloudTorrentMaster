@@ -12,9 +12,9 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.daimajia.numberprogressbar.NumberProgressBar;
 import com.google.android.material.navigation.NavigationView;
 import com.jtech.cloudtorrentmaster.R;
 import com.jtech.cloudtorrentmaster.manager.ActivityGoManager;
@@ -306,6 +306,17 @@ public class MainActivity extends BaseActivity implements MainContract.View,
     public void addTaskFail(String error) {
         LoadingDialog.dismissProgressDialog();
         ToastUtils.makeShort(titleView.getToolbar(), error).show();
+    }
+
+    @Override
+    public void modifySuccess() {
+        LoadingDialog.dismissProgressDialog();
+    }
+
+    @Override
+    public void modifyFail(String error) {
+        LoadingDialog.dismissProgressDialog();
+        ToastUtils.makeShort(cardViewTorrents, error).show();
     }
 
     /**
@@ -608,25 +619,21 @@ public class MainActivity extends BaseActivity implements MainContract.View,
         }
 
         /**
-         * 是否展开发片
-         *
-         * @param isExpand
+         * 折叠卡片
          */
-        void expandCard(boolean isExpand) {
-            linearLayoutStats.setVisibility(isExpand ? View.VISIBLE : View.GONE);
+        void collapseCard() {
+            linearLayoutStats.setVisibility(View.GONE);
         }
 
         /**
          * 切换卡片状态
-         *
-         * @param v
          */
-        void switchCard(View v) {
-            v.setSelected(!v.isSelected());
-            expandCard(v.isSelected());
-            rotationArrow(v.isSelected());
-            downloadsCardViewHolder.expandCard(false);
-            torrentsCardViewHolder.expandCard(false);
+        void switchCard() {
+            boolean isShowing = linearLayoutStats.getVisibility() == View.VISIBLE;
+            linearLayoutStats.setVisibility(isShowing ? View.GONE : View.VISIBLE);
+            rotationArrow(!isShowing);
+            downloadsCardViewHolder.collapseCard();
+            torrentsCardViewHolder.collapseCard();
         }
 
         /**
@@ -644,7 +651,7 @@ public class MainActivity extends BaseActivity implements MainContract.View,
         void onClick(View v) {
             switch (v.getId()) {
                 case R.id.cardview_main_content_stats://状态卡片展开或收起
-                    switchCard(v);
+                    switchCard();
                     break;
             }
         }
@@ -653,11 +660,11 @@ public class MainActivity extends BaseActivity implements MainContract.View,
     /**
      * 服务器下载任务卡片视图持有
      */
-    class TorrentsCardViewHolder {
+    class TorrentsCardViewHolder implements TorrentsAdapter.OnTorrentsListener {
         @BindView(R.id.textview_main_content_torrents_preview_title)
         TextView textViewPreviewTitle;
         @BindView(R.id.progressbar_main_content_total)
-        ProgressBar progressBarTotal;
+        NumberProgressBar progressBarTotal;
         @BindView(R.id.imageview_main_content_torrents_arrow)
         ImageView imageViewArrow;
 
@@ -676,6 +683,7 @@ public class MainActivity extends BaseActivity implements MainContract.View,
             jRecyclerViewTorrents.setLayoutManager(new LinearLayoutManager(getActivity()));
             this.torrentsAdapter = new TorrentsAdapter(getActivity());
             jRecyclerViewTorrents.setAdapter(torrentsAdapter);
+            this.torrentsAdapter.setListener(this);
             //设置默认值
             update(new ArrayList<>());
         }
@@ -686,6 +694,11 @@ public class MainActivity extends BaseActivity implements MainContract.View,
          * @param models
          */
         void update(@NonNull List<ServerTorrentModel> models) {
+            //如果数量为0则隐藏展开的卡片
+            if (models.size() <= 0) {
+                rotationArrow(false);
+                collapseCard();
+            }
             //设置标题
             BigDecimal totalProgress = getTotalProgress(models);
             String taskCount = String.valueOf(models.size());
@@ -721,24 +734,20 @@ public class MainActivity extends BaseActivity implements MainContract.View,
 
         /**
          * 是否展开发片
-         *
-         * @param isExpand
          */
-        void expandCard(boolean isExpand) {
-            linearLayoutTorrents.setVisibility(isExpand ? View.VISIBLE : View.GONE);
+        void collapseCard() {
+            linearLayoutTorrents.setVisibility(View.GONE);
         }
 
         /**
          * 切换卡片状态
-         *
-         * @param v
          */
-        void switchCard(View v) {
-            v.setSelected(!v.isSelected());
-            expandCard(v.isSelected());
-            rotationArrow(v.isSelected());
-            statsCardViewHolder.expandCard(false);
-            downloadsCardViewHolder.expandCard(false);
+        void switchCard() {
+            boolean isShowing = linearLayoutTorrents.getVisibility() == View.VISIBLE;
+            linearLayoutTorrents.setVisibility(isShowing ? View.GONE : View.VISIBLE);
+            rotationArrow(!isShowing);
+            statsCardViewHolder.collapseCard();
+            downloadsCardViewHolder.collapseCard();
         }
 
         /**
@@ -752,13 +761,23 @@ public class MainActivity extends BaseActivity implements MainContract.View,
             imageViewArrow.startAnimation(animation);
         }
 
+        @Override
+        public void openFolder(ServerTorrentModel model) {
+            // TODO: 2019/2/25 打开文件目录展示sheet 
+        }
+
+        @Override
+        public void modifyTorrent(String optional) {
+            LoadingDialog.showProgressDialog(getActivity());
+            presenter.modifyTorrentTask(optional);
+        }
+
         @OnClick(R.id.cardview_main_content_torrents)
         void onClick(View v) {
             switch (v.getId()) {
                 case R.id.cardview_main_content_torrents://卡片展开或收起
-                    if (torrentsAdapter.getItemCount() > 0 ||
-                            (torrentsAdapter.getItemCount() <= 0 && v.isSelected())) {
-                        switchCard(v);
+                    if (torrentsAdapter.getItemCount() > 0) {
+                        switchCard();
                     } else {
                         ToastUtils.makeShort(linearLayoutTorrents,
                                 getString(R.string.server_torrents_empty)).show();
@@ -787,24 +806,20 @@ public class MainActivity extends BaseActivity implements MainContract.View,
 
         /**
          * 是否展开发片
-         *
-         * @param isExpand
          */
-        void expandCard(boolean isExpand) {
-//            linearLayoutStats.setVisibility(isExpand ? View.VISIBLE : View.GONE);
+        void collapseCard() {
+//            linearLayoutStats.setVisibility( View.GONE);
         }
 
         /**
          * 切换卡片状态
-         *
-         * @param v
          */
-        void switchCard(View v) {
-            v.setSelected(!v.isSelected());
-            expandCard(v.isSelected());
-            rotationArrow(v.isSelected());
-            statsCardViewHolder.expandCard(false);
-            torrentsCardViewHolder.expandCard(false);
+        void switchCard() {
+//            boolean isShowing = linearLayoutTorrents.getVisibility() == View.VISIBLE;
+//            linearLayoutTorrents.setVisibility(isShowing ? View.GONE : View.VISIBLE);
+//            rotationArrow(isShowing);
+            statsCardViewHolder.collapseCard();
+            downloadsCardViewHolder.collapseCard();
         }
 
         /**
@@ -822,7 +837,7 @@ public class MainActivity extends BaseActivity implements MainContract.View,
 //        void onClick(View v) {
 //            switch (v.getId()) {
 //                case R.id.cardview_main_content_stats://状态卡片展开或收起
-//                    switchCard(v);
+//                    switchCard();
 //                    break;
 //            }
 //        }

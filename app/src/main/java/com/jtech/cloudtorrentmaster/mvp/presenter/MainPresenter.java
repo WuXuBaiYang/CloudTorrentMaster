@@ -96,4 +96,16 @@ public class MainPresenter implements MainContract.Presenter {
                 })
                 .isDisposed();
     }
+
+    @Override
+    public void modifyTorrentTask(String operation) {
+        API.get().cloudTorrentApi()
+                .modifyTask(RequestBody.create(MediaType
+                        .parse("application/json;charset=UTF-8"), operation))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> view.modifySuccess(),
+                        throwable -> view.modifyFail(throwable.getMessage()))
+                .isDisposed();
+    }
 }

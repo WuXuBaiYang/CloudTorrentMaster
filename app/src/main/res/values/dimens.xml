@@ -17,4 +17,5 @@
     <dimen name="add_task_torrent_file_icon_size">85dp</dimen>
     <dimen name="dot_connect_stats_size">12dp</dimen>
     <dimen name="dot_connect_stats_margin">6dp</dimen>
+    <dimen name="torrents_option_button_size">8dp</dimen>
 </resources>

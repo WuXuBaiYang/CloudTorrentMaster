@@ -20,11 +20,17 @@ public interface MainContract {
         void addTorrentTask(File file);
 
         void initServer();
+
+        void modifyTorrentTask(String operation);
     }
 
     interface View extends BaseContract.View {
         void addTaskSuccess();
 
         void addTaskFail(String error);
+
+        void modifySuccess();
+
+        void modifyFail(String error);
     }
 }
