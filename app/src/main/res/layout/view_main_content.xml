@@ -2,13 +2,13 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <include layout="@layout/view_title" />
 
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/nestedscrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -311,9 +311,8 @@
         android:id="@+id/fab_main_add_task"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/default_margin"
         android:src="@drawable/ic_fab_add_task"
-        app:fabSize="normal"
-        app:layout_anchor="@+id/nestedscrollview"
-        app:layout_anchorGravity="bottom|end"
-        app:useCompatPadding="true" />
+        app:fabSize="normal" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

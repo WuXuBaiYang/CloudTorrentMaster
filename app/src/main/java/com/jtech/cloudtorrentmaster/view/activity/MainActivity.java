@@ -58,6 +58,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -85,6 +86,8 @@ public class MainActivity extends BaseActivity implements MainContract.View,
     CardView cardViewDownloads;
     @BindView(R.id.cardview_main_content_torrents)
     CardView cardViewTorrents;
+    @BindView(R.id.content)
+    CoordinatorLayout content;
 
     private DownloadsCardViewHolder downloadsCardViewHolder;
     private TorrentsCardViewHolder torrentsCardViewHolder;
@@ -313,13 +316,13 @@ public class MainActivity extends BaseActivity implements MainContract.View,
     @Override
     public void addTaskSuccess() {
         LoadingDialog.dismissProgressDialog();
-        ToastUtils.makeShort(titleView.getToolbar(), R.string.add_task_success).show();
+        ToastUtils.makeShort(content, R.string.add_task_success).show();
     }
 
     @Override
     public void addTaskFail(String error) {
         LoadingDialog.dismissProgressDialog();
-        ToastUtils.makeShort(titleView.getToolbar(), error).show();
+        ToastUtils.makeShort(content, error).show();
     }
 
     @Override
@@ -330,7 +333,7 @@ public class MainActivity extends BaseActivity implements MainContract.View,
     @Override
     public void modifyFail(String error) {
         LoadingDialog.dismissProgressDialog();
-        ToastUtils.makeShort(cardViewTorrents, error).show();
+        ToastUtils.makeShort(content, error).show();
     }
 
     /**
@@ -800,8 +803,7 @@ public class MainActivity extends BaseActivity implements MainContract.View,
                     if (torrentsAdapter.getItemCount() > 0) {
                         switchCard();
                     } else {
-                        ToastUtils.makeShort(linearLayoutTorrents,
-                                getString(R.string.server_torrents_empty)).show();
+                        ToastUtils.makeShort(content, getString(R.string.server_torrents_empty)).show();
                     }
                     break;
             }
