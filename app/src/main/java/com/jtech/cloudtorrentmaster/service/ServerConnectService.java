@@ -104,10 +104,10 @@ public class ServerConnectService extends Service {
         //停止现有链接
         stopConnect();
         //实例化socket任务
-        this.socketTask = new ServerConnectSocketTask();
+        this.socketTask = new ServerConnectSocketTask()
+                .setAutoReconnect(true);
         this.socketTask.execute(String.format(
                 getString(R.string.server_connect_sync), host, port));
-        this.socketTask.setAutoReconnect(true);
     }
 
     /**
@@ -115,7 +115,8 @@ public class ServerConnectService extends Service {
      */
     private void stopConnect() {
         if (null != socketTask) {
-            this.socketTask.closeConnect();
+            this.socketTask.setAutoReconnect(false)
+                    .closeConnect();
             this.socketTask = null;
         }
     }
@@ -269,6 +270,8 @@ public class ServerConnectService extends Service {
      */
     @SuppressLint("StaticFieldLeak")
     private class ServerConnectSocketTask extends AsyncTask<String, String, Boolean> {
+        private final static String TYPE_SERVER_MESSAGE = "serverMessage";
+        private final static String TYPE_UPDATE_MESSAGE = "updateMessage";
         //心跳包检测频率，默认15秒
         private long heartBeatDelay = 15 * 1000;
         private WebSocketClient webSocketClient;
@@ -279,7 +282,8 @@ public class ServerConnectService extends Service {
             @Override
             public void handleMessage(Message msg) {
                 //如果对象不为空并且正在连接，则继续发送心跳包
-                if (null != webSocketClient && webSocketClient.isConnecting()) {
+                if (null != webSocketClient && (!webSocketClient.isClosed()
+                        || !webSocketClient.isClosing())) {
                     webSocketClient.send("");
                     sendHeartBeat();
                 }
@@ -314,6 +318,17 @@ public class ServerConnectService extends Service {
             }
         }
 
+        /**
+         * 发送链接状态消息
+         *
+         * @param connectStats
+         * @param reason
+         */
+        void sendConnectStatsEvent(int connectStats, String reason) {
+            Bus.get().post(new ServerConnectEvent(connectStats)
+                    .setReason(reason));
+        }
+
         @Override
         protected Boolean doInBackground(String... strings) {
             String requestUrl = strings[0];
@@ -323,22 +338,23 @@ public class ServerConnectService extends Service {
                 this.webSocketClient = new WebSocketClient(new URI(requestUrl)) {
                     @Override
                     public void onOpen(ServerHandshake serverHandshake) {
-                        onProgressUpdate("{\"connected\":true}");
+                        sendConnectStatsEvent(1, null);
                     }
 
                     @Override
                     public void onMessage(String message) {
-                        onProgressUpdate(message);
+                        onProgressUpdate(message, message.startsWith("{\"id\"")
+                                ? TYPE_SERVER_MESSAGE : TYPE_UPDATE_MESSAGE);
                     }
 
                     @Override
                     @SuppressLint("DefaultLocale")
                     public void onClose(int code, String reason, boolean remote) {
-                        onProgressUpdate(String.format(
-                                "{\"connected\":false,\"code\":%d, \"message\":%s}", code, reason));
+                        sendConnectStatsEvent(-1, null);
                         //自动重连
                         if (autoReconnect && null != webSocketClient) {
                             webSocketClient.reconnect();
+                            sendConnectStatsEvent(0, null);
                         }
                     }
 
@@ -348,6 +364,8 @@ public class ServerConnectService extends Service {
                 };
                 //开始连接
                 this.webSocketClient.connect();
+                //发送连接中状态
+                sendConnectStatsEvent(0, null);
                 //发送心跳包
                 sendHeartBeat();
             } catch (URISyntaxException e) {
@@ -360,15 +378,13 @@ public class ServerConnectService extends Service {
         protected void onProgressUpdate(String... values) {
             JsonObject messageJson = new JsonParser()
                     .parse(values[0]).getAsJsonObject();
-            if (messageJson.has("id")) {//原始数据消息
-                initOriginalJson(messageJson);
-            } else if (messageJson.has("delta")) {//更新数据消息
-                updateOriginalJson(originalJson, messageJson);
-            } else if (messageJson.has("connected")) {//链接状态
-                Bus.get().post(new ServerConnectEvent(
-                        messageJson.get("connected").getAsBoolean())
-                        .setCode(messageJson.get("code").getAsInt())
-                        .setReason(messageJson.get("message").getAsString()));
+            switch (values[1]) {
+                case TYPE_SERVER_MESSAGE://原始数据消息
+                    initOriginalJson(messageJson);
+                    break;
+                case TYPE_UPDATE_MESSAGE://更新数据消息
+                    updateOriginalJson(originalJson, messageJson);
+                    break;
             }
         }
     }
