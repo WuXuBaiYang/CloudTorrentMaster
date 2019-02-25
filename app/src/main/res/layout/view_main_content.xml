@@ -217,7 +217,7 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/cardview_main_content_downloads"
+                android:id="@+id/cardview_main_content_torrents"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/vertical_margin"
@@ -227,7 +227,55 @@
                 android:foreground="?selectableItemBackground"
                 app:cardUseCompatPadding="true">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/default_margin">
+
+                    <TextView
+                        android:id="@+id/textview_main_content_torrents_preview_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:text="@string/server_torrents_preview_title"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="@dimen/text_size_normal" />
+
+                    <ProgressBar
+                        android:id="@+id/progressbar_main_content_total"
+                        style="?android:progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/vertical_margin" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linearlayout_main_content_torrents"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:orientation="vertical"
+                    android:padding="@dimen/default_margin"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/textview_main_content_torrents_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/server_torrents_title"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="@dimen/text_size_normal" />
+
+                    <com.jtechlib2.view.recycler.JRecyclerView
+                        android:id="@+id/jrecyclerview_main_content_torrents"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/vertical_margin" />
+                </LinearLayout>
+
                 <ImageView
+                    android:id="@+id/imageview_main_content_torrents_arrow"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|end"
@@ -236,7 +284,7 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/cardview_main_content_torrents"
+                android:id="@+id/cardview_main_content_downloads"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/vertical_margin"

@@ -12,6 +12,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
@@ -33,6 +34,7 @@ import com.jtech.cloudtorrentmaster.mvp.presenter.MainPresenter;
 import com.jtech.cloudtorrentmaster.utils.ToastUtils;
 import com.jtech.cloudtorrentmaster.utils.Utils;
 import com.jtech.cloudtorrentmaster.view.adapter.ServerStatsUserAdapter;
+import com.jtech.cloudtorrentmaster.view.adapter.TorrentsAdapter;
 import com.jtech.cloudtorrentmaster.view.weight.AddTaskSheet;
 import com.jtech.cloudtorrentmaster.view.weight.LoadingDialog;
 import com.jtech.cloudtorrentmaster.view.weight.ServerSelectPopup;
@@ -47,6 +49,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -56,6 +59,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -581,8 +585,6 @@ public class MainActivity extends BaseActivity implements MainContract.View,
         }
 
         void setConnectStats(int connectStats) {
-            Animation animation = imageViewStats.getAnimation();
-            if (null != animation) animation.cancel();
             switch (connectStats) {
                 case -1://未连接
                     imageViewStats.setEnabled(false);
@@ -649,7 +651,125 @@ public class MainActivity extends BaseActivity implements MainContract.View,
     }
 
     /**
-     * 已下载文件试图持有
+     * 服务器下载任务卡片视图持有
+     */
+    class TorrentsCardViewHolder {
+        @BindView(R.id.textview_main_content_torrents_preview_title)
+        TextView textViewPreviewTitle;
+        @BindView(R.id.progressbar_main_content_total)
+        ProgressBar progressBarTotal;
+        @BindView(R.id.imageview_main_content_torrents_arrow)
+        ImageView imageViewArrow;
+
+        @BindView(R.id.linearlayout_main_content_torrents)
+        LinearLayout linearLayoutTorrents;
+        @BindView(R.id.textview_main_content_torrents_title)
+        TextView textViewTitle;
+        @BindView(R.id.jrecyclerview_main_content_torrents)
+        JRecyclerView jRecyclerViewTorrents;
+
+        private TorrentsAdapter torrentsAdapter;
+
+        TorrentsCardViewHolder(View itemView) {
+            ButterKnife.bind(this, itemView);
+            //设置种子下载任务列表
+            jRecyclerViewTorrents.setLayoutManager(new LinearLayoutManager(getActivity()));
+            this.torrentsAdapter = new TorrentsAdapter(getActivity());
+            jRecyclerViewTorrents.setAdapter(torrentsAdapter);
+            //设置默认值
+            update(new ArrayList<>());
+        }
+
+        /**
+         * 更新服务器下载任务列表
+         *
+         * @param models
+         */
+        void update(@NonNull List<ServerTorrentModel> models) {
+            //设置标题
+            BigDecimal totalProgress = getTotalProgress(models);
+            String taskCount = String.valueOf(models.size());
+            textViewPreviewTitle.setText(
+                    String.format(getString(R.string.server_torrents_preview_title),
+                            taskCount, totalProgress.doubleValue() + "%"));
+            textViewTitle.setText(String.format(getString(R.string.server_torrents_title), taskCount));
+            //设置预览的总进度条
+            progressBarTotal.setProgress(totalProgress.intValue());
+            //设置下载列表适配器
+            torrentsAdapter.setDatas(models);
+        }
+
+        /**
+         * 计算总进度
+         *
+         * @param models
+         * @return
+         */
+        private BigDecimal getTotalProgress(List<ServerTorrentModel> models) {
+            if (models.size() <= 0) return BigDecimal.ZERO;
+            BigDecimal totalProgress = BigDecimal.ZERO;
+            for (ServerTorrentModel model : models) {
+                totalProgress = totalProgress.add(
+                        BigDecimal.valueOf(model.getPercent()));
+            }
+            totalProgress = totalProgress
+                    .divide(BigDecimal.valueOf(models.size())
+                            .multiply(BigDecimal.valueOf(100)), 4, RoundingMode.DOWN)
+                    .multiply(BigDecimal.valueOf(100));
+            return totalProgress;
+        }
+
+        /**
+         * 是否展开发片
+         *
+         * @param isExpand
+         */
+        void expandCard(boolean isExpand) {
+            linearLayoutTorrents.setVisibility(isExpand ? View.VISIBLE : View.GONE);
+        }
+
+        /**
+         * 切换卡片状态
+         *
+         * @param v
+         */
+        void switchCard(View v) {
+            v.setSelected(!v.isSelected());
+            expandCard(v.isSelected());
+            rotationArrow(v.isSelected());
+            statsCardViewHolder.expandCard(false);
+            downloadsCardViewHolder.expandCard(false);
+        }
+
+        /**
+         * 旋转箭头
+         *
+         * @param isUp
+         */
+        private void rotationArrow(boolean isUp) {
+            Animation animation = AnimationUtils.loadAnimation(getActivity(),
+                    isUp ? R.anim.arrow_rotation_up : R.anim.arrow_rotation_down);
+            imageViewArrow.startAnimation(animation);
+        }
+
+        @OnClick(R.id.cardview_main_content_torrents)
+        void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.cardview_main_content_torrents://卡片展开或收起
+                    if (torrentsAdapter.getItemCount() > 0 ||
+                            (torrentsAdapter.getItemCount() <= 0 && !v.isSelected())) {
+                        switchCard(v);
+                    } else {
+                        ToastUtils.makeShort(linearLayoutTorrents,
+                                getString(R.string.server_torrents_empty));
+                    }
+                    break;
+            }
+        }
+    }
+
+    /**
+     * 已下载文件视图持有
      */
     class DownloadsCardViewHolder {
         DownloadsCardViewHolder(View itemView) {
@@ -666,39 +786,45 @@ public class MainActivity extends BaseActivity implements MainContract.View,
         }
 
         /**
-         * 是否展开卡片
+         * 是否展开发片
          *
          * @param isExpand
          */
         void expandCard(boolean isExpand) {
 //            linearLayoutStats.setVisibility(isExpand ? View.VISIBLE : View.GONE);
         }
-    }
 
-    /**
-     * 服务器下载任务卡片试图持有
-     */
-    class TorrentsCardViewHolder {
-        TorrentsCardViewHolder(View itemView) {
-            ButterKnife.bind(this, itemView);
+        /**
+         * 切换卡片状态
+         *
+         * @param v
+         */
+        void switchCard(View v) {
+            v.setSelected(!v.isSelected());
+            expandCard(v.isSelected());
+            rotationArrow(v.isSelected());
+            statsCardViewHolder.expandCard(false);
+            torrentsCardViewHolder.expandCard(false);
         }
 
         /**
-         * 更新服务器下载任务列表
+         * 旋转箭头
          *
-         * @param models
+         * @param isUp
          */
-        void update(@NonNull List<ServerTorrentModel> models) {
-            // TODO: 2019/2/22
+        private void rotationArrow(boolean isUp) {
+            Animation animation = AnimationUtils.loadAnimation(getActivity(),
+                    isUp ? R.anim.arrow_rotation_up : R.anim.arrow_rotation_down);
+//            imageViewArrow.startAnimation(animation);
         }
 
-        /**
-         * 是否展开卡片
-         *
-         * @param isExpand
-         */
-        void expandCard(boolean isExpand) {
-//            linearLayoutStats.setVisibility(isExpand ? View.VISIBLE : View.GONE);
-        }
+//        @OnClick(R.id.cardview_main_content_stats)
+//        void onClick(View v) {
+//            switch (v.getId()) {
+//                case R.id.cardview_main_content_stats://状态卡片展开或收起
+//                    switchCard(v);
+//                    break;
+//            }
+//        }
     }
 }

@@ -149,11 +149,11 @@ public class ServerConnectService extends Service {
             String[] paths = option.get("path").getAsString().split("/");
             String targetKey = paths[paths.length - 1];
             targetModelName = paths[1];
-            String jsonPath = parsePaths(paths);
             if ("replace".equals(op) || "add".equals(op)) {
-                document.put(jsonPath, targetKey, option.get("value"));
+                document.put(parsePaths(true, paths),
+                        targetKey, option.get("value"));
             } else if ("remove".equals(op)) {
-                document.delete(jsonPath);
+                document.delete(parsePaths(false, paths));
             }
         }
         //将修改过的json替换至原始json中
@@ -167,12 +167,13 @@ public class ServerConnectService extends Service {
     /**
      * 解析路径信息并拼接为可查询路径
      *
+     * @param stayParent
      * @param paths
      * @return
      */
-    private String parsePaths(String... paths) {
+    private String parsePaths(boolean stayParent, String... paths) {
         StringBuilder pathBuilder = new StringBuilder().append("$.body");
-        for (int j = 1; j < paths.length - 1; j++) {
+        for (int j = 1; j < paths.length - (stayParent ? 1 : 0); j++) {
             //如果上一个节点是以下参数则当前节点为集合选择
             String lastPath = paths[j - 1];
             if ("Files".equals(lastPath) || "Children".equals(lastPath)) {
@@ -202,7 +203,6 @@ public class ServerConnectService extends Service {
             } else if ("SearchProviders".equals(modelName)) {//搜索站点
                 Bus.get().postSticky(
                         new ServerSearchEvent(handleSearchProvidersModel(modelJson)));
-                return;
             } else if ("Downloads".equals(modelName)) {//下载信息
                 event = new ServerDownloadsEvent(new Gson()
                         .fromJson(modelJson, ServerDownloadsModel.class));

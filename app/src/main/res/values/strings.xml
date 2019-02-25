@@ -50,4 +50,7 @@
     <string name="server_stats_go_routines">Go并发：%d</string>
     <string name="server_stats_uptime">更新时间：%s</string>
     <string name="server_stats_title">%s v%s</string>
+    <string name="server_torrents_preview_title">共 %s 个下载任务,总进度 %s</string>
+    <string name="server_torrents_title">全部任务(%s)</string>
+    <string name="server_torrents_empty">任务列表为空</string>
 </resources>
