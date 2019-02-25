@@ -53,4 +53,5 @@
     <string name="server_torrents_preview_title">共 %s 个任务,总进度 %s</string>
     <string name="server_torrents_title">全部任务(%s)</string>
     <string name="server_torrents_empty">任务列表为空</string>
+    <string name="view_folder_file_info"><![CDATA[%s\t\t\t\t<font size=\"2\" color=\"#999999\"><small>- %s\t\t%s%%</small></font>]]></string>
 </resources>

@@ -39,6 +39,7 @@ import com.jtech.cloudtorrentmaster.view.weight.AddTaskSheet;
 import com.jtech.cloudtorrentmaster.view.weight.LoadingDialog;
 import com.jtech.cloudtorrentmaster.view.weight.ServerSelectPopup;
 import com.jtech.cloudtorrentmaster.view.weight.TitleView;
+import com.jtech.cloudtorrentmaster.view.weight.ViewFolderSheet;
 import com.jtechlib2.util.ImageUtils;
 import com.jtechlib2.view.activity.BaseActivity;
 import com.jtechlib2.view.recycler.JRecyclerView;
@@ -89,6 +90,7 @@ public class MainActivity extends BaseActivity implements MainContract.View,
     private TorrentsCardViewHolder torrentsCardViewHolder;
     private StatsCardViewHolder statsCardViewHolder;
     private NavigationHeaderViewHolder viewHolder;
+    private ViewFolderSheet viewFolderSheet;
     private AddTaskSheet addTaskSheet;
     private TitleView titleView;
 
@@ -221,6 +223,18 @@ public class MainActivity extends BaseActivity implements MainContract.View,
                     });
         }
         return addTaskSheet;
+    }
+
+    /**
+     * 获取文件夹目录浏览sheet对象
+     *
+     * @return
+     */
+    private ViewFolderSheet getViewFolderSheet() {
+        if (null == viewFolderSheet) {
+            this.viewFolderSheet = ViewFolderSheet.build(getActivity());
+        }
+        return viewFolderSheet;
     }
 
     /**
@@ -460,6 +474,11 @@ public class MainActivity extends BaseActivity implements MainContract.View,
         //判断添加任务sheet是否展示
         if (getAddTaskSheet().isShowing()) {
             getAddTaskSheet().dismiss();
+            return;
+        }
+        //判断文件目录浏览sheet是否展示
+        if (getViewFolderSheet().isShowing()) {
+            getViewFolderSheet().dismiss();
             return;
         }
         super.onBackPressed();
@@ -763,7 +782,9 @@ public class MainActivity extends BaseActivity implements MainContract.View,
 
         @Override
         public void openFolder(ServerTorrentModel model) {
-            // TODO: 2019/2/25 打开文件目录展示sheet 
+            getViewFolderSheet()
+                    .setFolderData(model.getFiles())
+                    .show();
         }
 
         @Override
