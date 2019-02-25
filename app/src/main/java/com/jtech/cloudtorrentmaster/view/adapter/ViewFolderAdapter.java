@@ -29,8 +29,8 @@ public class ViewFolderAdapter extends RecyclerAdapter<ServerTorrentModel.FileMo
     protected void convert(RecyclerHolder holder, ServerTorrentModel.FileModel model, int position) {
         //设置文件信息
         String fileSize = Formatter.formatFileSize(getContext(), model.getSize());
-        String fileInfo = String.format(getContext()
-                .getString(R.string.view_folder_file_info), model.getPath(), fileSize, String.valueOf(model.getPercent()));
+        String fileInfo = String.format(getContext().getString(R.string.view_folder_file_info),
+                model.getPath(), fileSize, String.valueOf(model.getPercent()));
         holder.setText(R.id.textview_view_folder, Html.fromHtml(fileInfo));
     }
 }
