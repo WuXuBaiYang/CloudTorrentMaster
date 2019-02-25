@@ -52,6 +52,15 @@
                         android:orientation="horizontal">
 
                         <TextView
+                            android:id="@+id/textview_main_content_stats_preview_cpu"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:singleLine="true"
+                            android:text="@string/server_stats_cpu"
+                            android:textSize="@dimen/text_size_small" />
+
+                        <TextView
                             android:id="@+id/textview_main_content_stats_preview_disk"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -67,15 +76,6 @@
                             android:layout_weight="1"
                             android:singleLine="true"
                             android:text="@string/server_stats_preview_memory"
-                            android:textSize="@dimen/text_size_small" />
-
-                        <TextView
-                            android:id="@+id/textview_main_content_stats_preview_cpu"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:singleLine="true"
-                            android:text="@string/server_stats_cpu"
                             android:textSize="@dimen/text_size_small" />
                     </LinearLayout>
                 </LinearLayout>
@@ -204,6 +204,15 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|end"
                     android:src="@drawable/ic_card_collapse_arrow"
+                    tools:ignore="ContentDescription" />
+
+                <ImageView
+                    android:id="@+id/imageview_main_content_stats"
+                    android:layout_width="@dimen/dot_connect_stats_size"
+                    android:layout_height="@dimen/dot_connect_stats_size"
+                    android:layout_gravity="top|end"
+                    android:layout_margin="@dimen/dot_connect_stats_margin"
+                    android:src="@drawable/dot_connect_stats"
                     tools:ignore="ContentDescription" />
             </androidx.cardview.widget.CardView>
 

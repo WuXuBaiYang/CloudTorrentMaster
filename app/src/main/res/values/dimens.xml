@@ -15,4 +15,6 @@
     <dimen name="server_select_create_logo_size">28dp</dimen>
     <dimen name="main_navigation_header_logo_size">75dp</dimen>
     <dimen name="add_task_torrent_file_icon_size">85dp</dimen>
+    <dimen name="dot_connect_stats_size">12dp</dimen>
+    <dimen name="dot_connect_stats_margin">6dp</dimen>
 </resources>

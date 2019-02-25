@@ -23,6 +23,7 @@ import com.jtech.cloudtorrentmaster.model.ServerInfoModel;
 import com.jtech.cloudtorrentmaster.model.ServerStatsModel;
 import com.jtech.cloudtorrentmaster.model.ServerTorrentModel;
 import com.jtech.cloudtorrentmaster.model.ServerUserModel;
+import com.jtech.cloudtorrentmaster.model.event.ServerConnectEvent;
 import com.jtech.cloudtorrentmaster.model.event.ServerDownloadsEvent;
 import com.jtech.cloudtorrentmaster.model.event.ServerStatsEvent;
 import com.jtech.cloudtorrentmaster.model.event.ServerTorrentsEvent;
@@ -123,6 +124,18 @@ public class MainActivity extends BaseActivity implements MainContract.View,
     protected void loadData() {
         //初始化服务器
         presenter.initServer();
+    }
+
+    /**
+     * 链接状态变化监听
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onConnectStatsEvent(ServerConnectEvent event) {
+        if (null != statsCardViewHolder) {
+            statsCardViewHolder.setConnectStats(event.getConnectStats());
+        }
     }
 
     /**
@@ -481,6 +494,8 @@ public class MainActivity extends BaseActivity implements MainContract.View,
         TextView textViewUsers;
         @BindView(R.id.jrecyclerview_main_content_stats_users)
         JRecyclerView jRecyclerViewUsers;
+        @BindView(R.id.imageview_main_content_stats)
+        ImageView imageViewStats;
 
         private ServerStatsUserAdapter userAdapter;
 
@@ -493,6 +508,8 @@ public class MainActivity extends BaseActivity implements MainContract.View,
             jRecyclerViewUsers.setAdapter(userAdapter);
             //设置默认值
             updateStats(new ServerStatsModel());
+            //默认状态为关闭
+            imageViewStats.setEnabled(false);
         }
 
         /**
@@ -561,6 +578,20 @@ public class MainActivity extends BaseActivity implements MainContract.View,
             //设置更新时间
             textViewUptime.setText(String.format(getString(
                     R.string.server_stats_uptime), model.getUptime()));
+        }
+
+        void setConnectStats(int connectStats) {
+            Animation animation = imageViewStats.getAnimation();
+            if (null != animation) animation.cancel();
+            switch (connectStats) {
+                case -1://未连接
+                    imageViewStats.setEnabled(false);
+                    break;
+                case 0://连接中
+                case 1://已连接
+                    imageViewStats.setEnabled(true);
+                    break;
+            }
         }
 
         /**
