@@ -757,11 +757,11 @@ public class MainActivity extends BaseActivity implements MainContract.View,
             switch (v.getId()) {
                 case R.id.cardview_main_content_torrents://卡片展开或收起
                     if (torrentsAdapter.getItemCount() > 0 ||
-                            (torrentsAdapter.getItemCount() <= 0 && !v.isSelected())) {
+                            (torrentsAdapter.getItemCount() <= 0 && v.isSelected())) {
                         switchCard(v);
                     } else {
                         ToastUtils.makeShort(linearLayoutTorrents,
-                                getString(R.string.server_torrents_empty));
+                                getString(R.string.server_torrents_empty)).show();
                     }
                     break;
             }
