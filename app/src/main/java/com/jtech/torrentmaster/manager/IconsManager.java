@@ -17,6 +17,11 @@ import androidx.annotation.NonNull;
  * 图标管理
  */
 public class IconsManager {
+    private final static String FILE_TYPE_FOLDER = "folder";
+    private final static String FILE_TYPE_IMAGE = "image";
+    private final static String FILE_TYPE_VIDEO = "video";
+    private final static String FILE_TYPE_AUDIO = "audio";
+    private final static String FILE_TYPE_UNKNOWN = "unknown";
     //声明国家图标资源表和文件类型资源表
     private LinkedHashMap<String, Uri> iconsLogoMap, iconsFileTypeMap;
     private static IconsManager manager;
@@ -87,7 +92,7 @@ public class IconsManager {
      * @return
      */
     public Uri getFolderTypeIcon() {
-        return getFileTypeIcon("folder");
+        return getFileTypeIcon(FILE_TYPE_FOLDER);
     }
 
     /**
@@ -97,15 +102,15 @@ public class IconsManager {
      * @return
      */
     public Uri getFileTypeIconByFileName(@NonNull String fileName) {
-        //获取文件词缀
-        String suffix = fileName.contains(".") ?
-                fileName.substring(fileName.lastIndexOf(".")) : "";
-        switch (suffix) {
-            case "png"://图片类型
-                // TODO: 2019/2/25 判断更多类型
-                return getFileTypeIcon("image");
+        switch (FileTypeManager.getFileType(fileName)) {
+            case FileTypeManager.IMAGE://图片类型
+                return getFileTypeIcon(FILE_TYPE_IMAGE);
+            case FileTypeManager.VIDEO://视频类型
+                return getFileTypeIcon(FILE_TYPE_VIDEO);
+            case FileTypeManager.AUDIO://音频类型
+                return getFileTypeIcon(FILE_TYPE_AUDIO);
             default://默认返回未知文件类型
-                return getFileTypeIcon("unknown");
+                return getFileTypeIcon(FILE_TYPE_UNKNOWN);
         }
     }
 
